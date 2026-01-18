@@ -1,0 +1,553 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Grand Prix Project - F1 Strategy Analysis</title>
+    <link rel="stylesheet" href="css/style-redesign.css">
+    <link rel="stylesheet" href="css/project-redesign.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    animation: {
+                        'fade-in-up': 'fadeInUp 0.8s ease-out forwards',
+                    },
+                    keyframes: {
+                        fadeInUp: {
+                            '0%': { opacity: '0', transform: 'translateY(20px)' },
+                            '100%': { opacity: '1', transform: 'translateY(0)' },
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        /* Dark mode variable overrides for existing CSS */
+        html.dark {
+            --bg-page: #111827;
+            --bg-card: #1f2937;
+            --text-primary: #f3f4f6;
+            --text-secondary: #9ca3af;
+            --border-light: #374151;
+            --x-graphic: #e5e7eb;
+            --watermark: #374151;
+        }
+        /* Ensure code blocks look good */
+        .dark pre {
+            border: 1px solid #374151;
+        }
+        /* Dark mode for project tiles and buttons */
+        .dark .summary-box-redesign,
+        .dark .key-findings-redesign,
+        .dark .overview-card-redesign,
+        .dark .highlight-card,
+        .dark .insight-card-vertical,
+        .dark .tech-card-vertical,
+        .dark .download-section-redesign,
+        .dark .code-section,
+        .dark .dashboard-info,
+        .dark .dashboard-preview {
+            background-color: #374151;
+            color: #f3f4f6;
+            border-color: #4b5563;
+        }
+        .dark .download-btn-redesign {
+            background-color: #4b5563;
+            color: #f3f4f6;
+            border-color: #6b7280;
+        }
+        .dark .download-btn-redesign:hover {
+            background-color: #374151;
+        }
+    </style>
+    <script>
+        if (localStorage.theme === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+            document.documentElement.classList.add('dark');
+        } else {
+            document.documentElement.classList.remove('dark');
+        }
+    </script>
+    <style>
+        .project-tabs {
+            display: flex;
+            justify-content: center;
+            margin: 2rem 0;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+        .tab-btn {
+            background: #f9fafb;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            color: #4b5563;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            font-family: 'Inter', sans-serif;
+        }
+        .tab-btn:hover {
+            background: #eff6ff;
+        }
+        .dark .tab-btn {
+            background: #374151;
+            color: #e5e7eb;
+        }
+        .dark .tab-btn:hover {
+            background: #4b5563;
+        }
+        .tab-btn.active {
+            background: #2563eb;
+            color: white;
+        }
+        .tab-content {
+            display: none;
+            animation: fadeIn 0.5s ease;
+        }
+        .tab-content.active {
+            display: block;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+</head>
+<body class="transition-colors duration-300">
+    <!-- Background Watermark -->
+    <div class="page-watermark">Project</div>
+    
+    <!-- Background Grid Pattern -->
+    <div class="grid-background dark:opacity-10"></div>
+
+    <!-- Main Card Container -->
+    <div class="project-card animate-fade-in-up">
+        <!-- Project Header Navigation -->
+        <div class="project-header-nav flex justify-between items-center">
+            <div class="flex items-center">
+                <a href="index.html#projects" class="back-link">
+                    <i class="fas fa-arrow-left"></i> Back
+                </a>
+            </div>
+            <div class="flex items-center gap-4">
+                <div class="project-nav-title">Grand Prix Project</div>
+                <button id="theme-toggle" class="p-2 rounded-full hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors focus:outline-none" aria-label="Toggle Dark Mode">
+                    <i class="fas fa-moon dark:hidden text-gray-500"></i>
+                    <i class="fas fa-sun hidden dark:block text-yellow-400"></i>
+                </button>
+            </div>
+        </div>
+
+        <!-- Project Title Section -->
+        <div class="project-title-section">
+            <h1>F1 Strategy Analysis<br>Lando Norris (2025)</h1>
+            <p class="project-description">Comprehensive telemetry analysis across Abu Dhabi, Miami, and Singapore Grand Prix events</p>
+            <div class="project-meta-redesign">
+                <span><i class="fas fa-calendar"></i> 2025</span>
+                <span><i class="fas fa-code"></i> Python, Pandas, Plotly</span>
+                <span><i class="fas fa-database"></i> Telemetry Data</span>
+            </div>
+        </div>
+
+        <!-- Executive Summary Section -->
+        <div class="project-section">
+            <h2>Executive Summary</h2>
+            <div class="summary-box-redesign">
+                <p><strong>Objective:</strong> Analyze race telemetry from the Abu Dhabi, Miami, and Singapore Grand Prix events to optimize tire strategy for future races.</p>
+                <div class="key-findings-redesign">
+                    <h3>Key Findings:</h3>
+                    <ul>
+                        <li><strong>Consistency King:</strong> Lando achieved his highest consistency in Abu Dhabi, with a lap time standard deviation of just 4.02s, acting as a baseline for optimal performance.</li>
+                        <li><strong>The "Miami Problem":</strong> Analysis reveals a critical failure of the Medium compound in Miami. High volatility in Sector 2 suggests the car struggled with aerodynamic stability in high-speed cornering sequences.</li>
+                        <li><strong>Tire Strategy:</strong> The Hard tire proved to be the superior race tire in Singapore, showing negligible degradation compared to the Medium's drop-off of ~0.15s per lap.</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Project Overview -->
+        <div class="project-section">
+            <h2>Project Overview</h2>
+            <div class="overview-grid-redesign">
+                <div class="overview-card-redesign">
+                    <h3><i class="fas fa-database"></i> Data Sources</h3>
+                    <p>Three Grand Prix race datasets:</p>
+                    <ul>
+                        <li>Abu Dhabi Grand Prix Race Data</li>
+                        <li>Miami Grand Prix Race Data</li>
+                        <li>Singapore Grand Prix Race Data</li>
+                    </ul>
+                </div>
+                <div class="overview-card-redesign">
+                    <h3><i class="fas fa-tools"></i> Technologies Used</h3>
+                    <ul>
+                        <li>Python 3</li>
+                        <li>Pandas (Data Processing)</li>
+                        <li>Plotly (Visualizations)</li>
+                        <li>Streamlit (Dashboard)</li>
+                    </ul>
+                </div>
+                <div class="overview-card-redesign">
+                    <h3><i class="fas fa-chart-bar"></i> Analysis Focus</h3>
+                    <ul>
+                        <li>Tire Degradation</li>
+                        <li>Lap Time Consistency</li>
+                        <li>Sector Performance</li>
+                        <li>Strategy Optimization</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Project Tabs Navigation -->
+        <div class="project-tabs">
+            <button class="tab-btn active" onclick="openProjectTab(event, 'tab-cleaning')">1. Data Cleaning</button>
+            <button class="tab-btn" onclick="openProjectTab(event, 'tab-analysis')">2. Analysis</button>
+            <button class="tab-btn" onclick="openProjectTab(event, 'tab-dashboard')">3. Dashboard</button>
+            <button class="tab-btn" onclick="openProjectTab(event, 'tab-insights')">4. Insights</button>
+        </div>
+
+        <!-- Data Cleaning Section -->
+        <div id="tab-cleaning" class="project-section tab-content active">
+            <h2>Step 1: Data Cleaning</h2>
+            <p>The first notebook focuses on consolidating and cleaning raw telemetry data from multiple race events.</p>
+            
+            <div class="code-section">
+                <h3>Data Processing Pipeline</h3>
+                <pre><code class="language-python">import pandas as pd
+import os
+
+DATA_PATH='/Users/apple/Documents/Uni/Personal /Grand Prix Project/Data'
+
+# Load all race CSV files
+files = [f for f in os.listdir(DATA_PATH) if f.endswith('.csv')]
+print(f"Found {len(files)} race files: {files}")
+
+def process_f1_data(file_list):
+    all_races = []
+    
+    for filename in file_list:
+        file_path = os.path.join(DATA_PATH, filename)
+        df = pd.read_csv(file_path, comment='#')
+        
+        # Remove header row if present
+        if df.iloc[0,0] == 'Lap number in the session':
+            df = df.drop(0).reset_index(drop=True)
+        
+        # Extract race name and add as column
+        race_name = filename.split("Grand Prix")[0]
+        df['Race'] = race_name
+        
+        # Convert numeric columns
+        cols = ['LAP', 'NOR_TIME', 'NOR_TIRE_LIFE', 'NOR_S1', 'NOR_S2', 'NOR_S3']
+        for c in cols:
+            df[c] = pd.to_numeric(df[c], errors='coerce')
+        
+        all_races.append(df)
+        print(f"Processed {race_name}")
+    
+    return pd.concat(all_races, ignore_index=True)
+
+# Create master dataset
+master_df = process_f1_data(files)
+master_df.to_csv('f1_clean_data.csv', index=False)
+print("Success! Master dataset saved as 'f1_clean_data.csv'")</code></pre>
+            </div>
+
+            <div class="process-steps">
+                <h3>Data Cleaning Steps:</h3>
+                <ol>
+                    <li><strong>Data Loading:</strong> Read CSV files from multiple race events</li>
+                    <li><strong>Header Cleaning:</strong> Remove header rows embedded in data</li>
+                    <li><strong>Race Identification:</strong> Extract and tag race names</li>
+                    <li><strong>Type Conversion:</strong> Convert numeric columns to appropriate types</li>
+                    <li><strong>Data Consolidation:</strong> Merge all races into a single DataFrame</li>
+                    <li><strong>Export:</strong> Save cleaned dataset for analysis</li>
+                </ol>
+            </div>
+        </div>
+
+        <!-- Analysis Section -->
+        <div id="tab-analysis" class="project-section tab-content">
+            <h2>Step 2: Data Analysis & Visualization</h2>
+            <p>The analysis phase explores telemetry patterns, tire behavior, and performance metrics across races.</p>
+
+            <div class="analysis-highlights">
+                <div class="highlight-card">
+                    <h3>Consistency Analysis</h3>
+                    <p>Comparing lap time variability across races to identify performance stability.</p>
+                </div>
+                <div class="highlight-card">
+                    <h3>Tire Degradation Curves</h3>
+                    <p>Analyzing how different tire compounds (Hard, Medium, Soft) degrade over lap count.</p>
+                </div>
+                <div class="highlight-card">
+                    <h3>Sector Performance</h3>
+                    <p>Breaking down lap times into three sectors to identify problem areas.</p>
+                </div>
+                <div class="highlight-card">
+                    <h3>Strategy Optimization</h3>
+                    <p>Using data-driven insights to recommend optimal tire strategies for future races.</p>
+                </div>
+            </div>
+
+            <div class="code-section">
+                <h3>Key Analysis Code Snippets</h3>
+                <pre><code class="language-python"># Calculate consistency metrics
+consistency_metrics = df.groupby('Race')['NOR_TIME'].agg([
+    ('Mean', 'mean'),
+    ('Std Dev', 'std'),
+    ('Min', 'min'),
+    ('Max', 'max'),
+    ('Range', lambda x: x.max() - x.min())
+])
+
+# Tire degradation analysis
+tire_deg = df.groupby(['Race', 'NOR_COMPOUND', 'NOR_TIRE_LIFE'])['NOR_TIME'].mean()
+
+# Sector performance breakdown
+sector_analysis = df[['NOR_S1', 'NOR_S2', 'NOR_S3']].describe()
+
+# Race-by-race comparison
+race_comparison = df.groupby('Race').agg({
+    'NOR_TIME': ['mean', 'std'],
+    'NOR_COMPOUND': 'nunique',
+    'LAP': 'max'
+})</code></pre>
+            </div>
+        </div>
+
+        <!-- Dashboard Section -->
+        <div id="tab-dashboard" class="project-section tab-content">
+            <h2>Step 3: Interactive Dashboard</h2>
+            <p>The dashboard enables real-time exploration of telemetry data with interactive filters and visualizations.</p>
+
+            <div class="dashboard-preview">
+                <div class="dashboard-info">
+                    <h3>Dashboard Features:</h3>
+                    <ul>
+                        <li>Race Filter: Select specific Grand Prix events</li>
+                        <li>Compound Filter: Filter by tire type (Hard, Medium, Soft)</li>
+                        <li>Key Metrics: Display average lap time, best lap, and data statistics</li>
+                        <li>Pace Evolution: Line chart showing lap time progression</li>
+                        <li>Tire Degradation: Scatter plot with trend lines</li>
+                        <li>Sector Analysis: Box plots for sector-level performance</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="code-section">
+                <h3>Dashboard Code (Streamlit)</h3>
+                <pre><code class="language-python">import streamlit as st
+import pandas as pd
+import plotly.express as px
+
+st.set_page_config(layout="wide", page_title="McLaren Strategy Dashboard")
+
+@st.cache_data
+def get_data():
+    return pd.read_csv('f1_clean_data.csv')
+
+df = get_data()
+
+st.sidebar.title("Race Controls")
+race_filter = st.sidebar.selectbox("Select Grand Prix", df['Race'].unique())
+compound_filter = st.sidebar.multiselect(
+    "Select Compounds", 
+    df['NOR_COMPOUND'].unique(),
+    default=df['NOR_COMPOUND'].unique()
+)
+
+filtered_df = df[(df['Race'] == race_filter) & 
+                 (df['NOR_COMPOUND'].isin(compound_filter))]
+
+st.title(f"Telemetry Analysis: {race_filter} GP")
+
+# Key Metrics
+col1, col2, col3, col4 = st.columns(4)
+avg_pace = filtered_df['NOR_TIME'].mean()
+best_lap = filtered_df['NOR_TIME'].min()
+
+col1.metric("Avg Lap Time", f"{avg_pace:.3f}s")
+col2.metric("Best Lap", f"{best_lap:.3f}s")
+col3.metric("Laps Analyzed", f"{len(filtered_df)}")
+col4.metric("Compounds Used", len(filtered_df['NOR_COMPOUND'].unique()))
+
+# Visualizations
+tab1, tab2, tab3 = st.tabs(["Pace Evolution", "Tire Degradation", "Sector Analysis"])
+
+with tab1:
+    st.subheader("Lap Time vs. Lap Number")
+    fig_pace = px.line(filtered_df, x='LAP', y='NOR_TIME', 
+                       color='NOR_COMPOUND', markers=True)
+    fig_pace.update_yaxes(autorange="reversed")
+    st.plotly_chart(fig_pace, use_container_width=True)
+
+with tab2:
+    st.subheader("Tire Degradation Curve")
+    fig_deg = px.scatter(filtered_df, x='NOR_TIRE_LIFE', y='NOR_TIME',
+                        color='NOR_COMPOUND', trendline="ols")
+    st.plotly_chart(fig_deg, use_container_width=True)
+
+with tab3:
+    st.subheader("Sector Analysis")
+    fig_sector = px.box(filtered_df, x='SECTOR', y='NOR_TIME',
+                       color='NOR_COMPOUND')
+    st.plotly_chart(fig_sector, use_container_width=True)</code></pre>
+            </div>
+
+            <div class="run-dashboard">
+                <h3>To Run the Dashboard Locally:</h3>
+                <pre><code class="language-bash">cd "content/projects/Grand Prix Project"
+streamlit run dashboard.py</code></pre>
+                <p class="note">Then navigate to <strong>http://localhost:8501</strong> to view the interactive dashboard</p>
+            </div>
+
+            <!-- Live Dashboard Embed -->
+            <div class="live-dashboard-section" style="margin-top: 2rem;">
+                <h3>Live Dashboard Demo</h3>
+                <p>Interact with the fully functional dashboard deployed on Streamlit Cloud:</p>
+                <iframe src="https://mclaren-race-analysis.streamlit.app/?embed=true" style="width: 100%; height: 800px; border: none; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); background: #f9fafb;"></iframe>
+            </div>
+        </div>
+
+        <!-- Key Insights -->
+        <div id="tab-insights" class="project-section tab-content">
+            <h2>Key Insights & Recommendations</h2>
+            <div class="insights-grid-vertical">
+                <div class="insight-card-vertical">
+                    <h3>Abu Dhabi Performance</h3>
+                    <p>Consistent performance with Medium compound tires. Standard deviation of 4.02s indicates excellent car balance and driver consistency on this circuit.</p>
+                </div>
+                <div class="insight-card-vertical">
+                    <h3>Miami Challenges</h3>
+                    <p>High volatility in Sector 2 suggests aerodynamic instability. Medium tire compound showed poor performance, indicating need for setup modifications.</p>
+                </div>
+                <div class="insight-card-vertical">
+                    <h3>Singapore Success</h3>
+                    <p>Hard tire compound proved superior, demonstrating ~0.15s per lap advantage over Medium. Recommend Hard tire strategy for similar high-degradation circuits.</p>
+                </div>
+                <div class="insight-card-vertical">
+                    <h3>Strategy Recommendation</h3>
+                    <p>Use circuit-specific tire strategies. For high-speed corners (Miami): Focus on car setup. For degradation-heavy tracks (Singapore): Prefer harder compounds.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- File Structure -->
+        <div class="project-section">
+            <h2>Project File Structure</h2>
+            <div class="file-tree">
+                <pre><code>Grand Prix Project/
+├── 1_Data_Cleaning.ipynb         # Data loading and processing
+├── 2_analysis.ipynb              # Exploratory analysis
+├── dashboard.py                  # Interactive Streamlit dashboard
+├── f1_clean_data.csv             # Cleaned and merged dataset
+├── requirements.txt              # Python dependencies
+└── Data/
+    ├── Abu Dhabi Grand Prix Race Data Dec 17 2025 (1).csv
+    ├── Miami Grand Prix Race Data Dec 2025.csv
+    └── Singapore Grand Prix Race Data Dec 2025.csv</code></pre>
+            </div>
+        </div>
+
+        <!-- Technologies Used -->
+        <div class="project-section">
+            <h2>Technologies & Libraries</h2>
+            <div class="tech-grid-vertical">
+                <div class="tech-card-vertical">
+                    <h4>Python 3.x</h4>
+                    <p>Core programming language for data processing and analysis</p>
+                </div>
+                <div class="tech-card-vertical">
+                    <h4>Pandas</h4>
+                    <p>Data manipulation, cleaning, and aggregation</p>
+                </div>
+                <div class="tech-card-vertical">
+                    <h4>Plotly</h4>
+                    <p>Interactive data visualizations and charts</p>
+                </div>
+                <div class="tech-card-vertical">
+                    <h4>Streamlit</h4>
+                    <p>Web framework for building interactive dashboards</p>
+                </div>
+                <div class="tech-card-vertical">
+                    <h4>Jupyter Notebooks</h4>
+                    <p>Interactive development and documentation</p>
+                </div>
+                <div class="tech-card-vertical">
+                    <h4>NumPy</h4>
+                    <p>Numerical computations and array operations</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Download Section -->
+        <div class="project-section">
+            <h2>Download Project Files</h2>
+            <div class="download-section-redesign">
+                <p>Access the complete project files and datasets:</p>
+                <div class="download-links-vertical">
+                    <a href="content/projects/Grand Prix Project/1_Data_Cleaning.ipynb" class="download-btn-redesign" download>
+                        <i class="fas fa-file-code"></i> Data Cleaning Notebook
+                    </a>
+                    <a href="content/projects/Grand Prix Project/2_analysis.ipynb" class="download-btn-redesign" download>
+                        <i class="fas fa-file-code"></i> Analysis Notebook
+                    </a>
+                    <a href="content/projects/Grand Prix Project/dashboard.py" class="download-btn-redesign" download>
+                        <i class="fas fa-file-code"></i> Dashboard Code
+                    </a>
+                    <a href="content/projects/Grand Prix Project/f1_clean_data.csv" class="download-btn-redesign" download>
+                        <i class="fas fa-file-csv"></i> Cleaned Dataset
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/main-redesign.js"></script>
+    <script>
+        // Syntax highlighting
+        document.querySelectorAll('pre code').forEach(el => {
+            hljs.highlightElement(el);
+        });
+
+        function openProjectTab(evt, tabName) {
+            var i, tabcontent, tablinks;
+            tabcontent = document.getElementsByClassName("tab-content");
+            for (i = 0; i < tabcontent.length; i++) {
+                tabcontent[i].style.display = "none";
+                tabcontent[i].classList.remove("active");
+            }
+            tablinks = document.getElementsByClassName("tab-btn");
+            for (i = 0; i < tablinks.length; i++) {
+                tablinks[i].className = tablinks[i].className.replace(" active", "");
+            }
+            document.getElementById(tabName).style.display = "block";
+            setTimeout(() => {
+                document.getElementById(tabName).classList.add("active");
+            }, 10);
+            evt.currentTarget.className += " active";
+        }
+
+        // Theme Toggle Logic
+        const themeToggleBtn = document.getElementById('theme-toggle');
+        themeToggleBtn.addEventListener('click', function() {
+            document.documentElement.classList.toggle('dark');
+            if (document.documentElement.classList.contains('dark')) {
+                localStorage.theme = 'dark';
+            } else {
+                localStorage.theme = 'light';
+            }
+        });
+    </script>
+</body>
+</html>

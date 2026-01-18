@@ -1,0 +1,475 @@
+/* Project Page Specific Styles */
+
+.project-header {
+    background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+    color: white;
+    padding: 60px 20px;
+    margin-top: 60px;
+}
+
+.back-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: rgba(255, 255, 255, 0.8);
+    text-decoration: none;
+    margin-bottom: 1rem;
+    font-size: 1rem;
+    transition: color 0.3s ease;
+}
+
+.back-link:hover {
+    color: white;
+}
+
+.project-header h1 {
+    font-size: 2.5rem;
+    margin: 1.5rem 0;
+}
+
+.project-subtitle {
+    font-size: 1.2rem;
+    opacity: 0.9;
+    margin-bottom: 2rem;
+}
+
+.project-meta {
+    display: flex;
+    gap: 2rem;
+    flex-wrap: wrap;
+    opacity: 0.95;
+    font-size: 1rem;
+}
+
+.project-meta span {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+/* Project Section Styling */
+.project-section {
+    padding: 60px 20px;
+}
+
+.project-section h2 {
+    color: var(--primary-color);
+    margin-bottom: 2rem;
+    font-size: 2rem;
+}
+
+.project-section h3 {
+    color: var(--primary-color);
+    margin: 1.5rem 0 1rem 0;
+}
+
+.alt-bg {
+    background: var(--light-bg);
+}
+
+/* Summary Box */
+.summary-box {
+    background: white;
+    padding: 2rem;
+    border-radius: 8px;
+    box-shadow: var(--shadow);
+    border-left: 4px solid var(--accent-color);
+}
+
+.summary-box p {
+    margin-bottom: 1.5rem;
+    line-height: 1.8;
+    font-size: 1.05rem;
+}
+
+.key-findings h3 {
+    margin-top: 0;
+}
+
+.key-findings ul {
+    list-style: none;
+    padding: 0;
+}
+
+.key-findings li {
+    padding: 0.75rem 0 0.75rem 2rem;
+    position: relative;
+    line-height: 1.7;
+}
+
+.key-findings li:before {
+    content: "→";
+    position: absolute;
+    left: 0;
+    color: var(--accent-color);
+    font-weight: bold;
+    font-size: 1.2rem;
+}
+
+/* Overview Grid */
+.overview-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 2rem;
+    margin-top: 2rem;
+}
+
+.overview-card {
+    background: white;
+    padding: 2rem;
+    border-radius: 8px;
+    box-shadow: var(--shadow);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.overview-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 12px 24px rgba(0, 0, 0, 0.15);
+}
+
+.overview-card h3 {
+    margin-top: 0;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    font-size: 1.2rem;
+}
+
+.overview-card ul {
+    list-style: none;
+    padding: 0;
+    margin: 1rem 0 0 0;
+}
+
+.overview-card li {
+    padding: 0.5rem 0 0.5rem 1.5rem;
+    position: relative;
+    color: #555;
+}
+
+.overview-card li:before {
+    content: "✓";
+    position: absolute;
+    left: 0;
+    color: var(--accent-color);
+    font-weight: bold;
+}
+
+/* Code Sections */
+.code-section {
+    margin: 2rem 0;
+    background: white;
+    padding: 2rem;
+    border-radius: 8px;
+    box-shadow: var(--shadow);
+}
+
+.code-section h3 {
+    margin-top: 0;
+    margin-bottom: 1rem;
+}
+
+.code-section pre {
+    background: #282c34;
+    padding: 1.5rem;
+    border-radius: 6px;
+    overflow-x: auto;
+    margin: 0;
+}
+
+.code-section code {
+    font-family: 'Courier New', Courier, monospace;
+    font-size: 0.9rem;
+    line-height: 1.5;
+    color: #abb2bf;
+}
+
+/* Highlight.js overrides */
+.hljs {
+    background: #282c34 !important;
+    color: #abb2bf !important;
+}
+
+.hljs-string { color: #98c379 !important; }
+.hljs-literal { color: #61afef !important; }
+.hljs-number { color: #d19a66 !important; }
+.hljs-attr { color: #61afef !important; }
+.hljs-variable { color: #e06c75 !important; }
+.hljs-function { color: #61afef !important; }
+.hljs-params { color: #abb2bf !important; }
+.hljs-comment { color: #5c6370 !important; }
+
+/* Process Steps */
+.process-steps {
+    background: #f0f4f8;
+    padding: 2rem;
+    border-radius: 8px;
+    margin: 2rem 0;
+}
+
+.process-steps ol {
+    margin: 1rem 0;
+    padding-left: 2rem;
+}
+
+.process-steps li {
+    margin: 0.75rem 0;
+    line-height: 1.6;
+}
+
+.process-steps strong {
+    color: var(--primary-color);
+}
+
+/* Analysis Highlights */
+.analysis-highlights {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 1.5rem;
+    margin: 2rem 0;
+}
+
+.highlight-card {
+    background: white;
+    padding: 1.5rem;
+    border-radius: 8px;
+    border-left: 4px solid var(--accent-color);
+    transition: transform 0.3s ease;
+}
+
+.highlight-card:hover {
+    transform: translateX(5px);
+}
+
+.highlight-card h3 {
+    margin-top: 0;
+    margin-bottom: 0.75rem;
+    color: var(--primary-color);
+}
+
+.highlight-card p {
+    color: #555;
+    line-height: 1.6;
+}
+
+/* Dashboard Section */
+.dashboard-preview {
+    background: white;
+    padding: 2rem;
+    border-radius: 8px;
+    box-shadow: var(--shadow);
+    margin: 2rem 0;
+}
+
+.dashboard-info h3 {
+    margin-top: 0;
+}
+
+.dashboard-info ul {
+    list-style: none;
+    padding: 0;
+}
+
+.dashboard-info li {
+    padding: 0.75rem 0 0.75rem 2rem;
+    position: relative;
+    line-height: 1.7;
+    color: #555;
+}
+
+.dashboard-info li:before {
+    content: "▸";
+    position: absolute;
+    left: 0;
+}
+
+.run-dashboard {
+    background: #f0f4f8;
+    padding: 1.5rem;
+    border-radius: 8px;
+    margin: 2rem 0;
+}
+
+.run-dashboard h3 {
+    margin-top: 0;
+}
+
+.run-dashboard pre {
+    background: #282c34;
+    padding: 1rem;
+    border-radius: 6px;
+    overflow-x: auto;
+    margin: 1rem 0;
+}
+
+.run-dashboard code {
+    font-family: 'Courier New', Courier, monospace;
+    color: #98c379;
+    font-size: 0.9rem;
+}
+
+.note {
+    background: #fff3cd;
+    border-left: 4px solid #ffc107;
+    padding: 1rem;
+    border-radius: 4px;
+    margin-top: 1rem;
+    color: #856404;
+}
+
+/* Insights Grid */
+.insights-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 1.5rem;
+    margin: 2rem 0;
+}
+
+.insight-card {
+    background: white;
+    padding: 1.5rem;
+    border-radius: 8px;
+    box-shadow: var(--shadow);
+    border-top: 4px solid var(--primary-color);
+}
+
+.insight-card h3 {
+    margin-top: 0;
+    color: var(--primary-color);
+}
+
+.insight-card p {
+    color: #555;
+    line-height: 1.7;
+}
+
+/* File Tree */
+.file-tree {
+    background: #282c34;
+    padding: 2rem;
+    border-radius: 8px;
+    overflow-x: auto;
+    margin: 2rem 0;
+}
+
+.file-tree pre {
+    background: transparent;
+    padding: 0;
+    margin: 0;
+}
+
+.file-tree code {
+    color: #61dafb;
+    font-family: 'Courier New', Courier, monospace;
+    font-size: 0.95rem;
+    line-height: 1.6;
+}
+
+/* Tech Grid */
+.tech-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1.5rem;
+    margin: 2rem 0;
+}
+
+.tech-card {
+    background: white;
+    padding: 1.5rem;
+    border-radius: 8px;
+    text-align: center;
+    box-shadow: var(--shadow);
+    transition: transform 0.3s ease;
+}
+
+.tech-card:hover {
+    transform: translateY(-5px);
+}
+
+.tech-card h4 {
+    color: var(--primary-color);
+    margin: 0 0 0.75rem 0;
+}
+
+.tech-card p {
+    color: #666;
+    font-size: 0.9rem;
+    line-height: 1.5;
+}
+
+/* Download Section */
+.download-section {
+    background: white;
+    padding: 2rem;
+    border-radius: 8px;
+    box-shadow: var(--shadow);
+    text-align: center;
+}
+
+.download-section p {
+    font-size: 1.1rem;
+    margin-bottom: 1.5rem;
+    color: #555;
+}
+
+.download-links {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1rem;
+}
+
+.download-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    padding: 1rem;
+    background: var(--primary-color);
+    color: white;
+    text-decoration: none;
+    border-radius: 6px;
+    transition: all 0.3s ease;
+    font-weight: 500;
+}
+
+.download-btn:hover {
+    background: var(--secondary-color);
+    transform: translateY(-3px);
+    box-shadow: 0 6px 12px rgba(37, 99, 235, 0.3);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .project-header h1 {
+        font-size: 1.8rem;
+    }
+
+    .project-subtitle {
+        font-size: 1rem;
+    }
+
+    .project-meta {
+        gap: 1rem;
+        font-size: 0.9rem;
+    }
+
+    .project-section {
+        padding: 40px 20px;
+    }
+
+    .overview-grid,
+    .analysis-highlights,
+    .insights-grid,
+    .tech-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .code-section pre {
+        font-size: 0.8rem;
+        padding: 1rem;
+    }
+
+    .download-links {
+        grid-template-columns: 1fr;
+    }
+}

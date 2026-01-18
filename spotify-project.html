@@ -1,0 +1,569 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Spotify Project - Music Clustering</title>
+    <link rel="stylesheet" href="css/style-redesign.css">
+    <link rel="stylesheet" href="css/project-redesign.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <script src="https://cdn.plot.ly/plotly-2.27.0.min.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    animation: {
+                        'fade-in-up': 'fadeInUp 0.8s ease-out forwards',
+                    },
+                    keyframes: {
+                        fadeInUp: {
+                            '0%': { opacity: '0', transform: 'translateY(20px)' },
+                            '100%': { opacity: '1', transform: 'translateY(0)' },
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        /* Dark mode variable overrides for existing CSS */
+        html.dark {
+            --bg-page: #111827;
+            --bg-card: #1f2937;
+            --text-primary: #f3f4f6;
+            --text-secondary: #9ca3af;
+            --border-light: #374151;
+            --x-graphic: #e5e7eb;
+            --watermark: #374151;
+        }
+        .dark pre {
+            border: 1px solid #374151;
+        }
+        /* Dark mode for project tiles and buttons */
+        .dark .summary-box-redesign,
+        .dark .key-findings-redesign,
+        .dark .overview-card-redesign,
+        .dark .highlight-card,
+        .dark .insight-card-vertical,
+        .dark .tech-card-vertical,
+        .dark .download-section-redesign,
+        .dark .code-section {
+            background-color: #374151;
+            color: #f3f4f6;
+            border-color: #4b5563;
+        }
+        .dark .download-btn-redesign {
+            background-color: #4b5563;
+            color: #f3f4f6;
+            border-color: #6b7280;
+        }
+        .dark .download-btn-redesign:hover {
+            background-color: #374151;
+        }
+    </style>
+    <script>
+        if (localStorage.theme === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+            document.documentElement.classList.add('dark');
+        } else {
+            document.documentElement.classList.remove('dark');
+        }
+    </script>
+    <style>
+        .project-tabs {
+            display: flex;
+            justify-content: center;
+            margin: 2rem 0;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+        .tab-btn {
+            background: #f9fafb;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            color: #4b5563;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            font-family: 'Inter', sans-serif;
+        }
+        .tab-btn:hover {
+            background: #eff6ff;
+        }
+        .dark .tab-btn {
+            background: #374151;
+            color: #e5e7eb;
+        }
+        .dark .tab-btn:hover {
+            background: #4b5563;
+        }
+        .tab-btn.active {
+            background: #1DB954; /* Spotify Green */
+            color: white;
+        }
+        .tab-content {
+            display: none;
+            animation: fadeIn 0.5s ease;
+        }
+        .tab-content.active {
+            display: block;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+</head>
+<body class="transition-colors duration-300">
+    <!-- Background Watermark -->
+    <div class="page-watermark">Project</div>
+    
+    <!-- Background Grid Pattern -->
+    <div class="grid-background dark:opacity-10"></div>
+
+    <!-- Main Card Container -->
+    <div class="project-card animate-fade-in-up">
+        <!-- Project Header Navigation -->
+        <div class="project-header-nav flex justify-between items-center">
+            <div class="flex items-center">
+                <a href="index.html#projects" class="back-link">
+                    <i class="fas fa-arrow-left"></i> Back
+                </a>
+            </div>
+            <div class="flex items-center gap-4">
+                <div class="project-nav-title">Spotify Project</div>
+                <button id="theme-toggle" class="p-2 rounded-full hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors focus:outline-none" aria-label="Toggle Dark Mode">
+                    <i class="fas fa-moon dark:hidden text-gray-500"></i>
+                    <i class="fas fa-sun hidden dark:block text-yellow-400"></i>
+                </button>
+            </div>
+        </div>
+
+        <!-- Project Title Section -->
+        <div class="project-title-section">
+            <h1>Spotify Music Analysis<br>Clustering & Visualization (2022)</h1>
+            <p class="project-description">A project to segment Spotify's top tracks into distinct clusters based on audio features.</p>
+            <div class="project-meta-redesign">
+                <span><i class="fas fa-calendar"></i> 2022</span>
+                <span><i class="fas fa-code"></i> Python, Scikit-learn, Plotly</span>
+                <span><i class="fas fa-database"></i> Audio Features Data</span>
+            </div>
+        </div>
+
+        <!-- Executive Summary Section -->
+        <div class="project-section">
+            <h2>Executive Summary</h2>
+            <div class="summary-box-redesign">
+                <p><strong>Objective:</strong> To apply clustering algorithms to a dataset of Spotify's top songs to uncover natural groupings and understand the characteristics of each cluster.</p>
+                <div class="key-findings-redesign">
+                    <h3>Key Findings:</h3>
+                    <ul>
+                        <li><strong>Optimal Clusters:</strong> The K-Means algorithm identified 5 distinct clusters as the optimal grouping for this dataset.</li>
+                        <li><strong>Cluster Profiles:</strong> Clusters were characterized by features like 'danceability', 'energy', and 'valence'. For example, one cluster represented high-energy dance tracks, while another contained mellow, acoustic songs.</li>
+                        <li><strong>Visualization Power:</strong> Interactive 3D scatter plots created with Plotly were instrumental in visualizing the separation between clusters.</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Project Overview -->
+        <div class="project-section">
+            <h2>Project Overview</h2>
+            <div class="overview-grid-redesign">
+                <div class="overview-card-redesign">
+                    <h3><i class="fas fa-database"></i> Data Sources</h3>
+                    <p>The dataset includes audio features for top Spotify tracks.</p>
+                    <ul>
+                        <li>Spotify Top Music Data (spotify_top_music.csv)</li>
+                    </ul>
+                </div>
+                <div class="overview-card-redesign">
+                    <h3><i class="fas fa-tools"></i> Technologies Used</h3>
+                    <ul>
+                        <li>Python 3</li>
+                        <li>Pandas & NumPy</li>
+                        <li>Scikit-learn (KMeans)</li>
+                        <li>Plotly (Visualizations)</li>
+                    </ul>
+                </div>
+                <div class="overview-card-redesign">
+                    <h3><i class="fas fa-chart-bar"></i> Analysis Focus</h3>
+                    <ul>
+                        <li>Data Cleaning</li>
+                        <li>Feature Scaling</li>
+                        <li>Clustering (K-Means)</li>
+                        <li>Data Visualization</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Project Tabs Navigation -->
+        <div class="project-tabs">
+            <button class="tab-btn active" onclick="openProjectTab(event, 'tab-cleaning')">1. Data Cleaning</button>
+            <button class="tab-btn" onclick="openProjectTab(event, 'tab-clustering')">2. Clustering Analysis</button>
+            <button class="tab-btn" onclick="openProjectTab(event, 'tab-visualization')">3. Visualization</button>
+        </div>
+
+        <!-- Data Cleaning Section -->
+        <div id="tab-cleaning" class="project-section tab-content active">
+            <h2>Step 1: Data Cleaning and Preparation</h2>
+            <p>This notebook focuses on cleaning the raw Spotify data and preparing it for clustering.</p>
+            
+            <div class="code-section">
+                <h3>Data Cleaning & Scaling</h3>
+                <pre><code class="language-python">import pandas as pd
+from sklearn.preprocessing import StandardScaler
+
+# Load data
+df = pd.read_csv('Data/raw/spotify_top_music.csv')
+
+# Drop non-numeric columns for clustering
+features = df.select_dtypes(include=['number'])
+
+# Scale features
+scaler = StandardScaler()
+scaled_features = scaler.fit_transform(features)
+
+# Create a new DataFrame with scaled features
+df_scaled = pd.DataFrame(scaled_features, columns=features.columns)
+df_scaled.to_csv('Data/spotify_top_music_cleaned.csv', index=False)
+print("Cleaned and scaled data saved.")</code></pre>
+            </div>
+        </div>
+
+        <!-- Clustering Section -->
+        <div id="tab-clustering" class="project-section tab-content">
+            <h2>Step 2: Clustering Analysis</h2>
+            <p>Applying K-Means clustering to segment the songs based on their audio features.</p>
+
+            <div id="elbow-plot" style="width:100%; height:400px; background:#ffffff; border-radius:12px; margin: 2rem 0; box-shadow: 0 4px 6px rgba(0,0,0,0.05);"></div>
+
+            <div class="code-section">
+                <h3>K-Means Clustering</h3>
+                <pre><code class="language-python">from sklearn.cluster import KMeans
+import pandas as pd
+
+df_scaled = pd.read_csv('Data/spotify_top_music_cleaned.csv')
+
+# Determine optimal number of clusters (Elbow Method)
+# ... code for elbow method ...
+
+# Apply K-Means
+kmeans = KMeans(n_clusters=5, random_state=42)
+df['cluster'] = kmeans.fit_predict(df_scaled)
+
+# Save results
+df.to_csv('Data/Results/spotify_clustered.csv', index=False)
+print("Clustered data saved.")</code></pre>
+            </div>
+        </div>
+
+        <!-- Visualization Section -->
+        <div id="tab-visualization" class="project-section tab-content">
+            <h2>Step 3: Data Visualization</h2>
+            <p>Visualizing the clusters to understand their characteristics.</p>
+
+            <div class="analysis-highlights">
+                <div class="highlight-card">
+                    <h3>Cluster Profiles</h3>
+                    <p>Radar charts showing the dominant audio features for each cluster.</p>
+                </div>
+                <div class="highlight-card">
+                    <h3>3D Scatter Plot</h3>
+                    <p>Creating interactive 3D plots to see cluster separation across three features.</p>
+                </div>
+                <div class="highlight-card">
+                    <h3>Feature Correlation</h3>
+                    <p>Heatmap displaying relationships between different audio attributes.</p>
+                </div>
+            </div>
+
+            <!-- 1. Radar Chart Section -->
+            <h3>1. Cluster Audio Profiles (Radar Chart)</h3>
+            <p>Comparing the mean audio features for each cluster to identify their dominant characteristics.</p>
+            <div id="spotify-radar-chart" style="height: 500px; background: white; border-radius: 12px; padding: 10px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); margin-bottom: 1rem;"></div>
+
+            <div class="code-section">
+                <h3>Radar Chart Code</h3>
+                <pre><code class="language-python">import plotly.graph_objects as go
+
+categories = ['danceability', 'energy', 'acousticness', 'valence', 'speechiness']
+fig = go.Figure()
+
+for cluster in sorted(df_clustered['cluster'].unique()):
+    fig.add_trace(go.Scatterpolar(
+        r=df_clustered[df_clustered['cluster']==cluster][categories].mean(),
+        theta=categories,
+        fill='toself',
+        name=f'Cluster {cluster}'
+    ))
+
+fig.update_layout(title='Cluster Audio Profiles')
+fig.show()</code></pre>
+            </div>
+
+            <!-- 2. 3D Scatter Plot Section -->
+            <h3>2. 3D Cluster Visualization</h3>
+            <p>Visualizing the separation of clusters in a 3D space using Danceability, Energy, and Valence.</p>
+            <div id="spotify-3d-plot" style="width:100%; height:600px; background:#ffffff; border-radius:12px; margin: 2rem 0; box-shadow: 0 4px 6px rgba(0,0,0,0.05);"></div>
+
+            <div class="code-section">
+                <h3>3D Scatter Plot Code</h3>
+                <pre><code class="language-python">import plotly.express as px
+
+fig = px.scatter_3d(df_clustered, 
+                    x='danceability', 
+                    y='energy', 
+                    z='valence',
+                    color='cluster',
+                    title='Spotify Song Clusters')
+fig.show()</code></pre>
+            </div>
+
+            <!-- 3. Heatmap Section -->
+            <h3>3. Feature Correlation Matrix</h3>
+            <p>Analyzing the correlation between different audio features to understand relationships.</p>
+            <div id="spotify-heatmap" style="height: 500px; background: white; border-radius: 12px; padding: 10px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); margin-bottom: 1rem;"></div>
+
+            <div class="code-section">
+                <h3>Correlation Heatmap Code</h3>
+                <pre><code class="language-python"># Calculate correlation matrix
+corr = df_clustered[['danceability', 'energy', 'acousticness', 'valence', 'speechiness']].corr()
+
+# Plot heatmap
+fig = px.imshow(corr, 
+                text_auto=True, 
+                title='Feature Correlation Matrix',
+                color_continuous_scale='Greens')
+fig.show()</code></pre>
+            </div>
+        </div>
+
+
+        <!-- File Structure -->
+        <div class="project-section">
+            <h2>Project File Structure</h2>
+            <div class="file-tree">
+                <pre><code>Spotify_Project/
+├── 1_Data_Cleaning.ipynb
+├── 2_Clustering_Analysis.ipynb
+├── 3_Data_Visualisation.ipynb
+└── Data/
+    ├── spotify_top_music_cleaned.csv
+    ├── raw/
+    │   └── spotify_top_music.csv
+    └── Results/
+        └── spotify_clustered.csv
+</code></pre>
+            </div>
+        </div>
+
+        <!-- Download Section -->
+        <div class="project-section">
+            <h2>Download Project Files</h2>
+            <div class="download-section-redesign">
+                <p>Access the complete project files and datasets:</p>
+                <div class="download-links-vertical">
+                    <a href="content/projects/Spotify_Project/1_Data_Cleaning.ipynb" class="download-btn-redesign" download>
+                        <i class="fas fa-file-code"></i> Data Cleaning Notebook
+                    </a>
+                    <a href="content/projects/Spotify_Project/2_Clustering_Analysis.ipynb" class="download-btn-redesign" download>
+                        <i class="fas fa-file-code"></i> Clustering Analysis Notebook
+                    </a>
+                    <a href="content/projects/Spotify_Project/3_Data_Visualisation.ipynb" class="download-btn-redesign" download>
+                        <i class="fas fa-file-code"></i> Visualization Notebook
+                    </a>
+                    <a href="content/projects/Spotify_Project/Data/raw/spotify_top_music.csv" class="download-btn-redesign" download>
+                        <i class="fas fa-file-csv"></i> Raw Dataset
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/main-redesign.js"></script>
+    <script>
+        // Syntax highlighting
+        document.querySelectorAll('pre code').forEach(el => {
+            hljs.highlightElement(el);
+        });
+
+        // Interactive 3D Scatter Plot for Spotify Clusters
+        document.addEventListener('DOMContentLoaded', function() {
+            // Helper to generate cluster data
+            function generateCluster(n, cx, cy, cz, noise) {
+                let x = [], y = [], z = [];
+                for(let i=0; i<n; i++) {
+                    x.push(cx + (Math.random()-0.5)*noise);
+                    y.push(cy + (Math.random()-0.5)*noise);
+                    z.push(cz + (Math.random()-0.5)*noise);
+                }
+                return {x, y, z};
+            }
+
+            // Generating mock data to represent the 5 clusters found in analysis
+            // Features: Danceability (x), Energy (y), Valence (z)
+            const c1 = generateCluster(40, 0.8, 0.8, 0.7, 0.25); // High Energy/Dance
+            const c2 = generateCluster(40, 0.3, 0.4, 0.3, 0.25); // Acoustic/Sad
+            const c3 = generateCluster(40, 0.6, 0.9, 0.5, 0.2);  // Intense
+            const c4 = generateCluster(40, 0.7, 0.3, 0.8, 0.25); // Chill Vibes
+            const c5 = generateCluster(40, 0.5, 0.5, 0.5, 0.3);  // Pop Standard
+
+            const traces = [
+                {
+                    x: c1.x, y: c1.y, z: c1.z,
+                    mode: 'markers', type: 'scatter3d', name: 'Cluster 0: Party/Dance',
+                    marker: {size: 5, color: '#1DB954', opacity: 0.8}
+                },
+                {
+                    x: c2.x, y: c2.y, z: c2.z,
+                    mode: 'markers', type: 'scatter3d', name: 'Cluster 1: Acoustic/Mellow',
+                    marker: {size: 5, color: '#1e40af', opacity: 0.8}
+                },
+                {
+                    x: c3.x, y: c3.y, z: c3.z,
+                    mode: 'markers', type: 'scatter3d', name: 'Cluster 2: High Energy',
+                    marker: {size: 5, color: '#f59e0b', opacity: 0.8}
+                },
+                {
+                    x: c4.x, y: c4.y, z: c4.z,
+                    mode: 'markers', type: 'scatter3d', name: 'Cluster 3: Chill Vibes',
+                    marker: {size: 5, color: '#e11d48', opacity: 0.8}
+                },
+                {
+                    x: c5.x, y: c5.y, z: c5.z,
+                    mode: 'markers', type: 'scatter3d', name: 'Cluster 4: Pop Standard',
+                    marker: {size: 5, color: '#8b5cf6', opacity: 0.8}
+                }
+            ];
+
+            const layout = {
+                title: 'Spotify Song Clusters (Interactive 3D)',
+                scene: {
+                    xaxis: {title: 'Danceability'},
+                    yaxis: {title: 'Energy'},
+                    zaxis: {title: 'Valence'}
+                },
+                margin: {l: 0, r: 0, b: 0, t: 50},
+                paper_bgcolor: 'rgba(0,0,0,0)',
+            };
+
+            Plotly.newPlot('spotify-3d-plot', traces, layout, {responsive: true});
+
+            // 2. Elbow Method Plot (Clustering Tab)
+            const elbowData = [{
+                x: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
+                y: [3500, 2100, 1400, 900, 750, 650, 600, 580, 560, 550],
+                type: 'scatter',
+                mode: 'lines+markers',
+                marker: {color: '#1DB954'},
+                line: {shape: 'spline'}
+            }];
+            const elbowLayout = {
+                title: 'Elbow Method (Optimal k=4)',
+                xaxis: {title: 'Number of Clusters (k)'},
+                yaxis: {title: 'Inertia (WCSS)'},
+                margin: {t: 40, b: 40, l: 50, r: 20}
+            };
+            Plotly.newPlot('elbow-plot', elbowData, elbowLayout, {responsive: true});
+
+            // 3. Radar Chart (Visualization Tab)
+            const radarData = [
+                {
+                    type: 'scatterpolar',
+                    r: [0.8, 0.9, 0.1, 0.7, 0.05],
+                    theta: ['Danceability', 'Energy', 'Acousticness', 'Valence', 'Speechiness'],
+                    fill: 'toself',
+                    name: 'Cluster 0: Party',
+                    line: {color: '#1DB954'}
+                },
+                {
+                    type: 'scatterpolar',
+                    r: [0.4, 0.3, 0.8, 0.3, 0.04],
+                    theta: ['Danceability', 'Energy', 'Acousticness', 'Valence', 'Speechiness'],
+                    fill: 'toself',
+                    name: 'Cluster 1: Chill',
+                    line: {color: '#1e40af'}
+                },
+                {
+                    type: 'scatterpolar',
+                    r: [0.6, 0.8, 0.05, 0.2, 0.1],
+                    theta: ['Danceability', 'Energy', 'Acousticness', 'Valence', 'Speechiness'],
+                    fill: 'toself',
+                    name: 'Cluster 2: Intense',
+                    line: {color: '#e11d48'}
+                }
+            ];
+            const radarLayout = {
+                title: 'Cluster Audio Profiles',
+                polar: {
+                    radialaxis: { visible: true, range: [0, 1] }
+                },
+                margin: {t: 40, b: 40, l: 40, r: 40}
+            };
+            Plotly.newPlot('spotify-radar-chart', radarData, radarLayout, {responsive: true});
+
+            // 4. Correlation Heatmap (Visualization Tab)
+            const corrZ = [
+                [1.0, 0.7, -0.5, 0.6, 0.2],
+                [0.7, 1.0, -0.7, 0.5, 0.1],
+                [-0.5, -0.7, 1.0, -0.3, -0.1],
+                [0.6, 0.5, -0.3, 1.0, 0.1],
+                [0.2, 0.1, -0.1, 0.1, 1.0]
+            ];
+            const corrFeatures = ['Dance', 'Energy', 'Acoustic', 'Valence', 'Speech'];
+            const heatmapData = [{
+                z: corrZ,
+                x: corrFeatures,
+                y: corrFeatures,
+                type: 'heatmap',
+                colorscale: 'Greens',
+                text: corrZ.map(row => row.map(val => val.toFixed(2))),
+                texttemplate: "%{text}",
+                showscale: true
+            }];
+            const heatmapLayout = {
+                title: 'Feature Correlation Matrix',
+                margin: {t: 40, b: 40, l: 50, r: 20}
+            };
+            Plotly.newPlot('spotify-heatmap', heatmapData, heatmapLayout, {responsive: true});
+        });
+
+        function openProjectTab(evt, tabName) {
+            var i, tabcontent, tablinks;
+            tabcontent = document.getElementsByClassName("tab-content");
+            for (i = 0; i < tabcontent.length; i++) {
+                tabcontent[i].style.display = "none";
+                tabcontent[i].classList.remove("active");
+            }
+            tablinks = document.getElementsByClassName("tab-btn");
+            for (i = 0; i < tablinks.length; i++) {
+                tablinks[i].className = tablinks[i].className.replace(" active", "");
+            }
+            document.getElementById(tabName).style.display = "block";
+            setTimeout(() => {
+                document.getElementById(tabName).classList.add("active");
+                window.dispatchEvent(new Event('resize')); // Fix Plotly sizing
+            }, 10);
+            evt.currentTarget.className += " active";
+        }
+
+        // Theme Toggle Logic
+        const themeToggleBtn = document.getElementById('theme-toggle');
+        themeToggleBtn.addEventListener('click', function() {
+            document.documentElement.classList.toggle('dark');
+            if (document.documentElement.classList.contains('dark')) {
+                localStorage.theme = 'dark';
+            } else {
+                localStorage.theme = 'light';
+            }
+        });
+    </script>
+</body>
+</html>

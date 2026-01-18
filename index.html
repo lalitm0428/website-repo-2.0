@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Data & Business Analytics Portfolio</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#2563eb',
+                        secondary: '#1e40af',
+                        accent: '#f59e0b',
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    },
+                    animation: {
+                        'fade-in-up': 'fadeInUp 0.8s ease-out forwards',
+                    },
+                    keyframes: {
+                        fadeInUp: {
+                            '0%': { opacity: '0', transform: 'translateY(20px)' },
+                            '100%': { opacity: '1', transform: 'translateY(0)' },
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        /* Custom typing animation */
+        .typing-container {
+            display: inline-block;
+            overflow: hidden;
+            white-space: nowrap;
+            border-right: 4px solid #f59e0b;
+            width: 0;
+            animation: typing 3s steps(30, end) forwards, blink 0.75s step-end infinite;
+        }
+        @keyframes typing {
+            from { width: 0 }
+            to { width: 100% }
+        }
+        @keyframes blink {
+            from, to { border-color: transparent }
+            50% { border-color: #f59e0b }
+        }
+    </style>
+    <style type="text/tailwindcss">
+        /* Tailwind styles for dynamically loaded projects */
+        .project-card-new {
+            @apply bg-white dark:bg-gray-700 border border-gray-100 dark:border-gray-600 rounded-2xl p-8 transition-all duration-300 hover:border-blue-600 dark:hover:border-blue-400 hover:shadow-xl hover:-translate-y-1 cursor-pointer flex flex-col h-full;
+        }
+        .project-card-new h3 {
+            @apply text-xl font-bold text-gray-900 dark:text-white mb-2;
+        }
+        .project-card-new p {
+            @apply text-sm text-gray-600 dark:text-gray-300 mb-4 leading-relaxed flex-grow;
+        }
+        .project-tags-new {
+            @apply flex flex-wrap gap-2 mt-auto;
+        }
+        .tag-new {
+            @apply text-xs font-semibold bg-gray-50 dark:bg-gray-600 text-gray-600 dark:text-gray-200 px-3 py-1 rounded-full uppercase tracking-wider;
+        }
+    </style>
+    <script>
+        // Initialize dark mode based on user preference or system settings
+        if (localStorage.theme === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+            document.documentElement.classList.add('dark');
+        } else {
+            document.documentElement.classList.remove('dark');
+        }
+    </script>
+</head>
+<body class="bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-white font-sans antialiased transition-colors duration-300">
+    <!-- Background Watermark -->
+    <div class="fixed inset-0 flex items-center justify-center pointer-events-none z-0 opacity-5 select-none">
+        <span class="text-[15vw] font-extrabold text-gray-300 dark:text-gray-700">Portfolio</span>
+    </div>
+    
+    <!-- Background Grid Pattern -->
+    <div class="fixed inset-0 z-0 opacity-[0.03] dark:invert pointer-events-none" style="background-image: radial-gradient(#000 1px, transparent 1px); background-size: 30px 30px;"></div>
+
+    <!-- Main Card Container -->
+    <div class="relative z-10 max-w-7xl mx-auto my-8 bg-white dark:bg-gray-800 rounded-[2rem] shadow-2xl overflow-hidden min-h-[90vh] flex flex-col transition-colors duration-300 animate-fade-in-up">
+        <!-- Card Header with Logo and Navigation -->
+        <div class="flex justify-between items-center p-8 md:p-12 border-b border-gray-100 dark:border-gray-700">
+            <div class="text-3xl text-blue-600">
+                <i class="fas fa-chart-line"></i>
+            </div>
+            <div class="flex items-center gap-6">
+                <nav class="hidden md:flex gap-4 text-gray-500 dark:text-gray-400 font-medium text-sm uppercase tracking-wider">
+                    <a href="#home" class="hover:text-blue-600 dark:hover:text-blue-400 transition-colors">Home</a>
+                    <span class="text-gray-300 dark:text-gray-600">/</span>
+                    <a href="#about" class="hover:text-blue-600 dark:hover:text-blue-400 transition-colors">Skills</a>
+                    <span class="text-gray-300 dark:text-gray-600">/</span>
+                    <a href="#projects" class="hover:text-blue-600 dark:hover:text-blue-400 transition-colors">Works</a>
+                    <span class="text-gray-300 dark:text-gray-600">/</span>
+                    <a href="#contact" class="hover:text-blue-600 dark:hover:text-blue-400 transition-colors">Contact</a>
+                </nav>
+                <button id="theme-toggle" class="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors focus:outline-none" aria-label="Toggle Dark Mode">
+                    <i class="fas fa-moon dark:hidden text-gray-500"></i>
+                    <i class="fas fa-sun hidden dark:block text-yellow-400"></i>
+                </button>
+            </div>
+        </div>
+
+        <!-- Card Content Grid -->
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 p-8 md:p-16 items-center flex-grow">
+            <!-- Left Column: Hero Text -->
+            <div class="flex flex-col items-start space-y-8">
+                <h1 class="text-5xl md:text-7xl font-bold text-gray-900 dark:text-white leading-tight">
+                    Hi there,<br>
+                    <span class="typing-container text-blue-600 dark:text-blue-400 pr-2">I'm Lalit!</span>
+                </h1>
+                <p class="text-xl text-gray-600 dark:text-gray-300 leading-relaxed max-w-lg">Transforming raw data into actionable insights through strategic analysis, visualization, and business intelligence solutions.</p>
+                
+                <a href="#projects" class="inline-flex items-center gap-3 bg-blue-600 text-white px-8 py-4 rounded-full font-semibold hover:bg-blue-700 transition-all transform hover:-translate-y-1 shadow-lg hover:shadow-blue-500/30">
+                    See My Works <i class="fas fa-arrow-right"></i>
+                </a>
+
+                <!-- Social Links -->
+                <div class="flex gap-4 text-sm font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wide pt-4">
+                    <a href="https://linkedin.com" class="hover:text-blue-600 dark:hover:text-blue-400 transition-colors" target="_blank">LinkedIn</a>
+                    <span class="text-gray-300 dark:text-gray-600">/</span>
+                    <a href="https://github.com" class="hover:text-blue-600 dark:hover:text-blue-400 transition-colors" target="_blank">GitHub</a>
+                    <span class="text-gray-300 dark:text-gray-600">/</span>
+                    <a href="content/resume/Lalit_Mohan_Resume-1.pdf" class="hover:text-blue-600 dark:hover:text-blue-400 transition-colors" download>Resume</a>
+                </div>
+            </div>
+
+            <!-- Right Column: Visual Element -->
+            <div class="relative flex justify-center lg:justify-end">
+                <div class="relative w-80 h-80 md:w-96 md:h-96">
+                    <svg class="absolute inset-0 w-full h-full text-gray-100 dark:text-gray-700 -z-10" viewBox="0 0 400 400" xmlns="http://www.w3.org/2000/svg">
+                        <line x1="50" y1="50" x2="350" y2="350" stroke="currentColor" stroke-width="3"/>
+                        <line x1="350" y1="50" x2="50" y2="350" stroke="currentColor" stroke-width="3"/>
+                    </svg>
+                    <div class="relative w-full h-full rounded-3xl overflow-hidden shadow-2xl border-8 border-white dark:border-gray-700 transform rotate-3 hover:rotate-0 transition-transform duration-500">
+                        <img src="assets/images/1679847513298.jpeg" alt="Profile" class="w-full h-full object-cover">
+                    </div>
+                </div>
+                <div class="absolute -right-8 top-1/2 -translate-y-1/2 hidden xl:flex flex-col items-center gap-4">
+                    <div class="writing-mode-vertical text-xs font-bold text-gray-300 dark:text-gray-600 uppercase tracking-[0.3em] rotate-180" style="writing-mode: vertical-rl;">analyst</div>
+                    <div class="w-px h-24 bg-gray-200 dark:bg-gray-700"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Projects Section Inside Card -->
+        <div class="p-8 md:p-16 bg-gray-50 dark:bg-gray-900/50" id="projects">
+            <h2 class="text-3xl font-bold text-gray-900 dark:text-white mb-12 flex items-center gap-4">
+                Selected Works
+                <div class="h-px bg-gray-300 dark:bg-gray-600 flex-grow"></div>
+            </h2>
+            <div id="projects-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                <!-- Projects loaded dynamically -->
+            </div>
+        </div>
+
+        <!-- Skills Section Inside Card -->
+        <div class="p-8 md:p-16" id="about">
+            <h2 class="text-3xl font-bold text-gray-900 dark:text-white mb-12 flex items-center gap-4">
+                Skills & Expertise
+                <div class="h-px bg-gray-300 dark:bg-gray-600 flex-grow"></div>
+            </h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+                <div class="p-6 bg-gray-50 dark:bg-gray-700 rounded-2xl hover:bg-blue-50 dark:hover:bg-gray-600 transition-colors group">
+                    <h3 class="text-lg font-bold text-gray-900 dark:text-white mb-4 group-hover:text-blue-600 dark:group-hover:text-blue-400">Data Analysis</h3>
+                    <ul class="space-y-2 text-gray-600 dark:text-gray-300 text-sm">
+                        <li>Python</li>
+                        <li>Pandas & NumPy</li>
+                        <li>Statistical Analysis</li>
+                    </ul>
+                </div>
+                <div class="p-6 bg-gray-50 dark:bg-gray-700 rounded-2xl hover:bg-blue-50 dark:hover:bg-gray-600 transition-colors group">
+                    <h3 class="text-lg font-bold text-gray-900 dark:text-white mb-4 group-hover:text-blue-600 dark:group-hover:text-blue-400">Visualization</h3>
+                    <ul class="space-y-2 text-gray-600 dark:text-gray-300 text-sm">
+                        <li>Seaborn & Matplotlib</li>
+                        <li>Plotly</li>
+                        <li>Data Storytelling</li>
+                    </ul>
+                </div>
+                <div class="p-6 bg-gray-50 dark:bg-gray-700 rounded-2xl hover:bg-blue-50 dark:hover:bg-gray-600 transition-colors group">
+                    <h3 class="text-lg font-bold text-gray-900 dark:text-white mb-4 group-hover:text-blue-600 dark:group-hover:text-blue-400">Machine Learning</h3>
+                    <ul class="space-y-2 text-gray-600 dark:text-gray-300 text-sm">
+                        <li>Scikit-learn</li>
+                        <li>Predictive Modeling</li>
+                        <li>Classification</li>
+                    </ul>
+                </div>
+                <div class="p-6 bg-gray-50 dark:bg-gray-700 rounded-2xl hover:bg-blue-50 dark:hover:bg-gray-600 transition-colors group">
+                    <h3 class="text-lg font-bold text-gray-900 dark:text-white mb-4 group-hover:text-blue-600 dark:group-hover:text-blue-400">Business Analytics</h3>
+                    <ul class="space-y-2 text-gray-600 dark:text-gray-300 text-sm">
+                        <li>KPI Analysis</li>
+                        <li>Insights & Strategy</li>
+                        <li>Report Generation</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Contact Section -->
+        <div class="p-8 md:p-16 bg-gray-900 dark:bg-black text-white" id="contact">
+            <h2 class="text-3xl font-bold mb-6">Get In Touch</h2>
+            <p class="text-gray-400 mb-8 max-w-xl">Open to internship opportunities and collaboration. Feel free to reach out if you'd like to discuss data, tech, or F1!</p>
+            <div class="flex flex-wrap gap-6">
+                <a href="mailto:lalitmohanamuse@gmail.com" class="px-6 py-3 bg-white/10 dark:bg-white/5 rounded-lg hover:bg-white/20 transition-colors font-medium">Email</a>
+                <a href="https://www.linkedin.com/in/lalitmohan-kumar" class="px-6 py-3 bg-white/10 dark:bg-white/5 rounded-lg hover:bg-white/20 transition-colors font-medium" target="_blank">LinkedIn</a>
+                <a href="https://www.github.com/lalitm0428/f1-strategy-dashboard" class="px-6 py-3 bg-white/10 dark:bg-white/5 rounded-lg hover:bg-white/20 transition-colors font-medium" target="_blank">GitHub</a>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/main-redesign.js"></script>
+    <script>
+        const themeToggleBtn = document.getElementById('theme-toggle');
+        
+        themeToggleBtn.addEventListener('click', function() {
+            // Toggle dark class
+            document.documentElement.classList.toggle('dark');
+            
+            // Save preference
+            if (document.documentElement.classList.contains('dark')) {
+                localStorage.theme = 'dark';
+            } else {
+                localStorage.theme = 'light';
+            }
+        });
+    </script>
+</body>
+</html>

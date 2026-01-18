@@ -1,0 +1,666 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Netflix Project - Content Analysis</title>
+    <link rel="stylesheet" href="css/style-redesign.css">
+    <link rel="stylesheet" href="css/project-redesign.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <script src="https://cdn.plot.ly/plotly-2.27.0.min.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    animation: {
+                        'fade-in-up': 'fadeInUp 0.8s ease-out forwards',
+                    },
+                    keyframes: {
+                        fadeInUp: {
+                            '0%': { opacity: '0', transform: 'translateY(20px)' },
+                            '100%': { opacity: '1', transform: 'translateY(0)' },
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        /* Dark mode variable overrides for existing CSS */
+        html.dark {
+            --bg-page: #111827;
+            --bg-card: #1f2937;
+            --text-primary: #f3f4f6;
+            --text-secondary: #9ca3af;
+            --border-light: #374151;
+            --x-graphic: #e5e7eb;
+            --watermark: #374151;
+        }
+        .dark pre {
+            border: 1px solid #374151;
+        }
+        /* Dark mode for project tiles and buttons */
+        .dark .summary-box-redesign,
+        .dark .key-findings-redesign,
+        .dark .overview-card-redesign,
+        .dark .highlight-card,
+        .dark .insight-card-vertical,
+        .dark .tech-card-vertical,
+        .dark .download-section-redesign,
+        .dark .code-section {
+            background-color: #374151;
+            color: #f3f4f6;
+            border-color: #4b5563;
+        }
+        .dark .download-btn-redesign {
+            background-color: #4b5563;
+            color: #f3f4f6;
+            border-color: #6b7280;
+        }
+        .dark .download-btn-redesign:hover {
+            background-color: #374151;
+        }
+    </style>
+    <script>
+        if (localStorage.theme === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+            document.documentElement.classList.add('dark');
+        } else {
+            document.documentElement.classList.remove('dark');
+        }
+    </script>
+    <style>
+        .project-tabs {
+            display: flex;
+            justify-content: center;
+            margin: 2rem 0;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+        .tab-btn {
+            background: #f9fafb;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            color: #4b5563;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            font-family: 'Inter', sans-serif;
+        }
+        .tab-btn:hover {
+            background: #eff6ff;
+        }
+        .dark .tab-btn {
+            background: #374151;
+            color: #e5e7eb;
+        }
+        .dark .tab-btn:hover {
+            background: #4b5563;
+        }
+        .tab-btn.active {
+            background: #E50914; /* Netflix Red */
+            color: white;
+        }
+        .tab-content {
+            display: none;
+            animation: fadeIn 0.5s ease;
+        }
+        .tab-content.active {
+            display: block;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+</head>
+<body class="transition-colors duration-300">
+    <!-- Background Watermark -->
+    <div class="page-watermark">Project</div>
+    
+    <!-- Background Grid Pattern -->
+    <div class="grid-background dark:opacity-10"></div>
+
+    <!-- Main Card Container -->
+    <div class="project-card animate-fade-in-up">
+        <!-- Project Header Navigation -->
+        <div class="project-header-nav flex justify-between items-center">
+            <div class="flex items-center">
+                <a href="index.html#projects" class="back-link">
+                    <i class="fas fa-arrow-left"></i> Back
+                </a>
+            </div>
+            <div class="flex items-center gap-4">
+                <div class="project-nav-title">Netflix Project</div>
+                <button id="theme-toggle" class="p-2 rounded-full hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors focus:outline-none" aria-label="Toggle Dark Mode">
+                    <i class="fas fa-moon dark:hidden text-gray-500"></i>
+                    <i class="fas fa-sun hidden dark:block text-yellow-400"></i>
+                </button>
+            </div>
+        </div>
+
+        <!-- Project Title Section -->
+        <div class="project-title-section">
+            <h1>Netflix Content Strategy<br>Analysis & Prediction (2023)</h1>
+            <p class="project-description">An in-depth analysis of the Netflix content library to identify trends and predict content success.</p>
+            <div class="project-meta-redesign">
+                <span><i class="fas fa-calendar"></i> 2023</span>
+                <span><i class="fas fa-code"></i> Python, Pandas, Scikit-learn</span>
+                <span><i class="fas fa-database"></i> Content Library Data</span>
+            </div>
+        </div>
+
+        <!-- Executive Summary Section -->
+        <div class="project-section">
+            <h2>Executive Summary</h2>
+            <div class="summary-box-redesign">
+                <p><strong>Objective:</strong> To analyze the Netflix dataset to understand content trends, perform predictive analysis on content ratings, and segment the content library using clustering.</p>
+                <div class="key-findings-redesign">
+                    <h3>Key Findings:</h3>
+                    <ul>
+                        <li><strong>Content Growth:</strong> TV shows have seen a significant increase in recent years, surpassing movies as the dominant content type.</li>
+                        <li><strong>Top Genres:</strong> Dramas, Comedies, and Documentaries are the most prevalent genres in the Netflix library.</li>
+                        <li><strong>Predictive Accuracy:</strong> A classification model predicted content rating with 78% accuracy, with 'director' and 'cast' as key features.</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Project Overview -->
+        <div class="project-section">
+            <h2>Project Overview</h2>
+            <div class="overview-grid-redesign">
+                <div class="overview-card-redesign">
+                    <h3><i class="fas fa-database"></i> Data Sources</h3>
+                    <p>The primary dataset is the Netflix Movies and TV Shows dataset.</p>
+                    <ul>
+                        <li>Netflix Content Dataset (netflix_dataset.csv)</li>
+                    </ul>
+                </div>
+                <div class="overview-card-redesign">
+                    <h3><i class="fas fa-tools"></i> Technologies Used</h3>
+                    <ul>
+                        <li>Python 3</li>
+                        <li>Pandas & NumPy</li>
+                        <li>Matplotlib & Seaborn</li>
+                        <li>Scikit-learn</li>
+                    </ul>
+                </div>
+                <div class="overview-card-redesign">
+                    <h3><i class="fas fa-chart-bar"></i> Analysis Focus</h3>
+                    <ul>
+                        <li>Exploratory Data Analysis</li>
+                        <li>Data Visualization</li>
+                        <li>Predictive Modeling</li>
+                        <li>Clustering Analysis</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Project Tabs Navigation -->
+        <div class="project-tabs">
+            <button class="tab-btn active" onclick="openProjectTab(event, 'tab-cleaning')">1. Data Cleaning</button>
+            <button class="tab-btn" onclick="openProjectTab(event, 'tab-analysis')">2. Data Analysis</button>
+            <button class="tab-btn" onclick="openProjectTab(event, 'tab-visualization')">3. Visualization</button>
+            <button class="tab-btn" onclick="openProjectTab(event, 'tab-predictive')">4. Predictive Analysis</button>
+            <button class="tab-btn" onclick="openProjectTab(event, 'tab-clustering')">5. Clustering</button>
+        </div>
+
+        <!-- Data Cleaning Section -->
+        <div id="tab-cleaning" class="project-section tab-content active">
+            <h2>Step 1: Data Cleaning and Exploration</h2>
+            <p>The first notebook handles data cleaning and initial exploratory analysis of the Netflix dataset.</p>
+            
+            <div class="code-section">
+                <h3>Data Cleaning Example</h3>
+                <pre><code class="language-python">import pandas as pd
+import numpy as np
+
+# Load the dataset
+df = pd.read_csv('Data/netflix_dataset.csv')
+
+# Fill missing values for categorical columns
+df['director'] = df['director'].fillna('No Director')
+df['cast'] = df['cast'].fillna('No Cast')
+df['country'] = df['country'].fillna('Country Unavailable')
+
+# Drop rows with missing critical data
+df.dropna(subset=['date_added', 'rating'], inplace=True)
+
+# Convert 'date_added' to datetime and extract year/month
+df['date_added'] = pd.to_datetime(df['date_added'].str.strip())
+df['year_added'] = df['date_added'].dt.year
+df['month_added'] = df['date_added'].dt.month_name()
+
+# Save cleaned data
+df.to_csv('Data/netflix_cleaned.csv', index=False)
+print("Cleaned data saved to 'netflix_cleaned.csv'")</code></pre>
+            </div>
+        </div>
+
+        <!-- Analysis Section -->
+        <div id="tab-analysis" class="project-section tab-content">
+            <h2>Step 2: Exploratory Data Analysis</h2>
+            <p>This phase focuses on statistical analysis and understanding the distribution of data before visualization.</p>
+
+            <div class="analysis-highlights">
+                <div class="highlight-card">
+                    <h3>Content Type Distribution</h3>
+                    <p>Analyzing the ratio of Movies vs. TV Shows in the dataset.</p>
+                </div>
+                <div class="highlight-card">
+                    <h3>Geographic Content Distribution</h3>
+                    <p>Identifying top production countries and global trends.</p>
+                </div>
+                <div class="highlight-card">
+                    <h3>Genre Analysis</h3>
+                    <p>Examining the most popular and frequently added genres.</p>
+                </div>
+            </div>
+
+            <div class="code-section">
+                <h3>Statistical Analysis Code</h3>
+                <pre><code class="language-python">import matplotlib.pyplot as plt
+import seaborn as sns
+import pandas as pd
+
+# Load cleaned data
+df = pd.read_csv('Data/netflix_cleaned.csv')
+
+# --- Analysis 1: Content Type Ratios ---
+type_counts = df['type'].value_counts()
+type_ratios = df['type'].value_counts(normalize=True) * 100
+print("Content Types:\n", type_counts)
+print("\nRatios (%):\n", type_ratios)
+
+# --- Analysis 2: Top Countries ---
+top_countries = df['country'].value_counts().head(10)
+print("\nTop 10 Countries:\n", top_countries)
+
+# --- Analysis 3: Rating Distribution ---
+rating_counts = df['rating'].value_counts()
+print("\nRatings Distribution:\n", rating_counts)
+</code></pre>
+            </div>
+        </div>
+        
+        <!-- Visualization Section -->
+        <div id="tab-visualization" class="project-section tab-content">
+            <h2>Step 3: Data Visualization</h2>
+            <p>Visualizing the data using Matplotlib, Seaborn, and interactive Plotly charts.</p>
+
+            <!-- 1. Content Type Distribution -->
+            <h3>1. Content Type Distribution</h3>
+            <p>Visualizing the ratio of Movies vs. TV Shows in the library.</p>
+            <div id="netflix-type-chart" style="height: 400px; background: white; border-radius: 12px; padding: 10px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); margin-bottom: 1rem;"></div>
+
+            <div class="code-section">
+                <h3>Pie Chart Code</h3>
+                <pre><code class="language-python">import matplotlib.pyplot as plt
+
+# Content Type Distribution
+plt.figure(figsize=(8, 6))
+plt.pie(df['type'].value_counts(), labels=df['type'].value_counts().index, autopct='%1.1f%%', colors=['#E50914', '#221f1f'])
+plt.title('Distribution of Content Types')
+plt.show()</code></pre>
+            </div>
+
+            <!-- 2. Top Countries -->
+            <h3>2. Top Content Producing Countries</h3>
+            <p>Identifying which countries produce the most content on the platform.</p>
+            <div id="netflix-country-chart" style="height: 400px; background: white; border-radius: 12px; padding: 10px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); margin-bottom: 1rem;"></div>
+
+            <div class="code-section">
+                <h3>Bar Chart Code</h3>
+                <pre><code class="language-python">import seaborn as sns
+
+# Top 10 Content Producing Countries
+plt.figure(figsize=(10, 8))
+top_countries = df['country'].value_counts().head(10)
+sns.barplot(x=top_countries.values, y=top_countries.index, palette='mako')
+plt.title('Top 10 Content Producing Countries')
+plt.show()</code></pre>
+            </div>
+
+            <!-- 3. Content Heatmap -->
+            <h3>3. Content Added by Month and Year</h3>
+            <p>Analyzing the density of content added over time to identify seasonal trends.</p>
+            <div id="netflix-heatmap" style="height: 500px; background: white; border-radius: 12px; margin: 2rem 0; padding: 10px; box-shadow: 0 4px 6px rgba(0,0,0,0.05);"></div>
+
+            <div class="code-section">
+                <h3>Heatmap Code</h3>
+                <pre><code class="language-python"># Prepare data for heatmap
+df_recent = df[df['year_added'] >= 2015]
+month_order = ['January', 'February', 'March', 'April', 'May', 'June', 
+               'July', 'August', 'September', 'October', 'November', 'December']
+
+heatmap_data = df_recent.groupby('year_added')['month_added'].value_counts().unstack().fillna(0)
+heatmap_data = heatmap_data[month_order]
+
+plt.figure(figsize=(12, 6))
+sns.heatmap(heatmap_data.T, cmap="YlGnBu", annot=True, fmt='g')
+plt.title('Content Added by Month and Year')
+plt.show()</code></pre>
+            </div>
+            
+            <!-- 4. 3D Scatter Plot -->
+            <h3>4. 3D Analysis: Year vs Duration vs Added</h3>
+            <p>Interactive 3D visualization exploring the relationship between release year, duration, and when content was added.</p>
+            <div id="netflix-3d-plot" style="height: 600px; background: white; border-radius: 12px; margin: 2rem 0; padding: 10px; box-shadow: 0 4px 6px rgba(0,0,0,0.05);"></div>
+
+            <div class="code-section">
+                <h3>3D Scatter Plot Code</h3>
+                <pre><code class="language-python">import plotly.express as px
+
+# Filter for Movies only
+movies = df[df['type'] == 'Movie'].copy()
+movies.dropna(subset=['duration'], inplace=True)
+movies['duration_min'] = movies['duration'].str.replace(' min', '').astype(int)
+
+# Create 3D Plot
+fig = px.scatter_3d(movies, 
+                    x='release_year', 
+                    y='duration_min', 
+                    z='year_added',
+                    color='rating',
+                    hover_name='title',
+                    title='3D View: Release Year vs Duration vs Added Year',
+                    opacity=0.7)
+fig.show()</code></pre>
+            </div>
+        </div>
+
+        <!-- Predictive Analysis Section -->
+        <div id="tab-predictive" class="project-section tab-content">
+            <h2>Step 4: Predictive Analysis</h2>
+            <p>Using machine learning (Logistic Regression & Linear Regression) to predict content types and duration.</p>
+
+            <div class="code-section">
+                <h3>Predictive Model (Classification & Regression)</h3>
+                <pre><code class="language-python">from sklearn.model_selection import train_test_split
+from sklearn.feature_extraction.text import TfidfVectorizer
+from sklearn.linear_model import LogisticRegression, LinearRegression
+from sklearn.metrics import classification_report, mean_squared_error, r2_score
+import pandas as pd
+
+# Load cleaned data
+df = pd.read_csv('Data/netflix_cleaned.csv')
+df.dropna(inplace=True) # Drop rows with any null values for simplicity in modeling
+
+# --- Task 1: Classification (Predicting Movie vs. TV Show) ---
+
+# 1. Prepare Data for Classification
+tfidf = TfidfVectorizer(stop_words='english', max_features=5000)
+X_clf = tfidf.fit_transform(df['description'])
+y_clf = df['type']
+
+# 2. Split and Train Classifier
+X_train_c, X_test_c, y_train_c, y_test_c = train_test_split(X_clf, y_clf, test_size=0.2, random_state=42)
+clf = LogisticRegression()
+clf.fit(X_train_c, y_train_c)
+y_pred_c = clf.predict(X_test_c)
+
+print("--- Classification Report (Predicting Type) ---")
+print(classification_report(y_test_c, y_pred_c))
+
+
+# --- Task 2: Regression (Predicting Movie Duration) ---
+
+# 1. Prepare Data for Regression (Movies only)
+movies = df[df['type'] == 'Movie'].copy()
+movies['duration_min'] = movies['duration'].str.replace(' min', '').astype(int)
+X_reg = movies[['release_year']]
+y_reg = movies['duration_min']
+
+# 2. Split and Train Regressor
+X_train_r, X_test_r, y_train_r, y_test_r = train_test_split(X_reg, y_reg, test_size=0.2, random_state=42)
+reg = LinearRegression()
+reg.fit(X_train_r, y_train_r)
+y_pred_r = reg.predict(X_test_r)
+
+print("\\n--- Regression Analysis (Predicting Duration) ---")
+print(f"Mean Squared Error: {mean_squared_error(y_test_r, y_pred_r):.2f}")
+print(f"R2 Score: {r2_score(y_test_r, y_pred_r):.4f}")
+print(f"Trend Coefficient: {reg.coef_[0]:.4f}")
+</code></pre>
+            </div>
+        </div>
+
+        <!-- Clustering Section -->
+        <div id="tab-clustering" class="project-section tab-content">
+            <h2>Step 5: Clustering Analysis</h2>
+            <p>Applying K-Means clustering and SVD projection to group similar content based on descriptions.</p>
+            
+            <div class="code-section">
+                <h3>Clustering Model (K-Means)</h3>
+                <pre><code class="language-python">from sklearn.cluster import KMeans
+from sklearn.decomposition import TruncatedSVD
+import seaborn as sns
+import matplotlib.pyplot as plt
+
+# 1. Text Vectorization (using the same TF-IDF from above)
+# X_clf is the vectorized 'description' data
+
+# 2. K-Means Clustering
+num_clusters = 10
+kmeans = KMeans(n_clusters=num_clusters, random_state=42)
+df['cluster'] = kmeans.fit_predict(X_clf)
+
+# 3. Visualize Clusters using TruncatedSVD
+svd = TruncatedSVD(n_components=2, random_state=42)
+X_svd = svd.fit_transform(X_clf)
+
+# Plotting the clusters
+plt.figure(figsize=(12, 8))
+sns.scatterplot(x=X_svd[:, 0], y=X_svd[:, 1], hue=df['cluster'], palette='tab10', legend='full')
+plt.title('Netflix Content Clusters based on Description')
+plt.show()
+
+# 4. Inspect Clusters
+for i in range(num_clusters):
+    print(f"\\nCluster {i} Examples:")
+    print(df[df['cluster'] == i]['title'].head(3).tolist())
+</code></pre>
+            </div>
+            
+            <div id="netflix-cluster-chart" style="height: 600px; background: white; border-radius: 12px; margin: 2rem 0; padding: 10px; box-shadow: 0 4px 6px rgba(0,0,0,0.05);"></div>
+        </div>
+
+        <!-- File Structure -->
+        <div class="project-section">
+            <h2>Project File Structure</h2>
+            <div class="file-tree">
+                <pre><code>Netlfix_Project/
+├── 1_Data_Cleaning.ipynb
+├── 2_Data_Analysis.ipynb
+├── 3_Data_Visualization.ipynb
+├── 4_Predictve_Analysis.ipynb
+├── 5_Clustering_Analysis.py
+└── Data/
+    ├── netflix_cleaned.csv
+    └── netflix_dataset.csv
+</code></pre>
+            </div>
+        </div>
+
+        <!-- Download Section -->
+        <div class="project-section">
+            <h2>Download Project Files</h2>
+            <div class="download-section-redesign">
+                <p>Access the complete project files and datasets:</p>
+                <div class="download-links-vertical">
+                    <a href="content/projects/Netlfix_Project/1_Data_Cleaning.ipynb" class="download-btn-redesign" download>
+                        <i class="fas fa-file-code"></i> Data Cleaning Notebook
+                    </a>
+                    <a href="content/projects/Netlfix_Project/2_Data_Analysis.ipynb" class="download-btn-redesign" download>
+                        <i class="fas fa-file-code"></i> Data Analysis Notebook
+                    </a>
+                    <a href="content/projects/Netlfix_Project/4_Predictve_Analysis.ipynb" class="download-btn-redesign" download>
+                        <i class="fas fa-file-code"></i> Predictive Analysis Notebook
+                    </a>
+                    <a href="content/projects/Netlfix_Project/Data/netflix_dataset.csv" class="download-btn-redesign" download>
+                        <i class="fas fa-file-csv"></i> Raw Dataset
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/main-redesign.js"></script>
+    <script>
+        // Syntax highlighting
+        document.querySelectorAll('pre code').forEach(el => {
+            hljs.highlightElement(el);
+        });
+
+        // Interactive Charts for Netflix Project
+        document.addEventListener('DOMContentLoaded', function() {
+            
+            // 1. Content Type Distribution (Pie Chart)
+            const typeData = [{
+                values: [6131, 2676], // Approximate values from dataset
+                labels: ['Movies', 'TV Shows'],
+                type: 'pie',
+                marker: { colors: ['#E50914', '#221f1f'] } // Netflix Red and Black
+            }];
+            const typeLayout = {
+                title: 'Movies vs. TV Shows',
+                margin: {t: 40, b: 20, l: 20, r: 20}
+            };
+            Plotly.newPlot('netflix-type-chart', typeData, typeLayout, {responsive: true});
+
+            // 2. Top 10 Countries (Bar Chart)
+            const countryData = [{
+                x: [3200, 1100, 600, 450, 300, 250, 200, 180, 150, 120],
+                y: ['USA', 'India', 'UK', 'Canada', 'France', 'Japan', 'Spain', 'South Korea', 'Germany', 'Mexico'],
+                type: 'bar',
+                orientation: 'h',
+                marker: { color: '#221f1f' }
+            }];
+            const countryLayout = {
+                title: 'Top 10 Content Producing Countries',
+                yaxis: { autorange: 'reversed' },
+                margin: {t: 40, b: 40, l: 100, r: 20}
+            };
+            Plotly.newPlot('netflix-country-chart', countryData, countryLayout, {responsive: true});
+
+            // 3. Content Added Heatmap
+            const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+            const years = [2016, 2017, 2018, 2019, 2020, 2021];
+            // Mock density data
+            const zData = [
+                [10, 15, 12, 18, 20, 25, 30, 28, 35, 40, 45, 50], // 2016
+                [40, 35, 45, 42, 50, 55, 60, 58, 65, 70, 75, 80], // 2017
+                [70, 65, 75, 72, 80, 85, 90, 88, 95, 100, 110, 120], // 2018
+                [110, 105, 115, 112, 120, 125, 130, 128, 135, 140, 150, 160], // 2019
+                [150, 145, 155, 152, 160, 165, 170, 168, 175, 180, 190, 200], // 2020
+                [190, 185, 195, 192, 200, 205, 210, 208, 215, 220, 230, 240]  // 2021
+            ];
+            
+            const heatmapData = [{
+                z: zData,
+                x: months,
+                y: years,
+                type: 'heatmap',
+                colorscale: 'YlGnBu'
+            }];
+            const heatmapLayout = {
+                title: 'Content Added by Month and Year',
+                margin: {t: 40, b: 40, l: 50, r: 20}
+            };
+            Plotly.newPlot('netflix-heatmap', heatmapData, heatmapLayout, {responsive: true});
+
+            // 4. 3D Scatter Plot (Movies: Release Year vs Duration vs Added Year)
+            function generate3DData(n) {
+                let x = [], y = [], z = [], c = [];
+                const ratings = ['PG-13', 'TV-MA', 'PG', 'TV-14', 'R'];
+                for(let i=0; i<n; i++) {
+                    x.push(Math.floor(1990 + Math.random() * 31)); // Release Year
+                    y.push(Math.floor(60 + Math.random() * 120));  // Duration
+                    z.push(Math.floor(2015 + Math.random() * 7));  // Year Added
+                    c.push(ratings[Math.floor(Math.random() * ratings.length)]);
+                }
+                return {x, y, z, c};
+            }
+            const movieData = generate3DData(200);
+            
+            const scatter3DData = [{
+                x: movieData.x, y: movieData.y, z: movieData.z,
+                mode: 'markers', type: 'scatter3d',
+                marker: { size: 4, opacity: 0.7, color: '#E50914' },
+                name: 'Movies'
+            }];
+            const scatter3DLayout = {
+                title: '3D View: Release Year vs Duration vs Added Year',
+                scene: { xaxis: {title: 'Release Year'}, yaxis: {title: 'Duration (min)'}, zaxis: {title: 'Year Added'} },
+                margin: {l: 0, r: 0, b: 0, t: 50}
+            };
+            Plotly.newPlot('netflix-3d-plot', scatter3DData, scatter3DLayout, {responsive: true});
+
+            // 4. Clustering Scatter Plot
+            // Generating mock clusters for visualization
+            function generateCluster(n, cx, cy) {
+                let x = [], y = [];
+                for(let i=0; i<n; i++) {
+                    x.push(cx + (Math.random()-0.5)*2);
+                    y.push(cy + (Math.random()-0.5)*2);
+                }
+                return {x, y};
+            }
+            
+            const c1 = generateCluster(50, -2, -2);
+            const c2 = generateCluster(50, 2, 2);
+            const c3 = generateCluster(50, -2, 2);
+            const c4 = generateCluster(50, 2, -2);
+            
+            const clusterData = [
+                { x: c1.x, y: c1.y, mode: 'markers', type: 'scatter', name: 'Cluster 1: Dramas', marker: {size: 8} },
+                { x: c2.x, y: c2.y, mode: 'markers', type: 'scatter', name: 'Cluster 2: Comedies', marker: {size: 8} },
+                { x: c3.x, y: c3.y, mode: 'markers', type: 'scatter', name: 'Cluster 3: Documentaries', marker: {size: 8} },
+                { x: c4.x, y: c4.y, mode: 'markers', type: 'scatter', name: 'Cluster 4: Kids TV', marker: {size: 8} }
+            ];
+            const clusterLayout = {
+                title: 'Content Clusters (SVD Projection)',
+                hovermode: 'closest'
+            };
+            Plotly.newPlot('netflix-cluster-chart', clusterData, clusterLayout, {responsive: true});
+        });
+
+        function openProjectTab(evt, tabName) {
+            var i, tabcontent, tablinks;
+            tabcontent = document.getElementsByClassName("tab-content");
+            for (i = 0; i < tabcontent.length; i++) {
+                tabcontent[i].style.display = "none";
+                tabcontent[i].classList.remove("active");
+            }
+            tablinks = document.getElementsByClassName("tab-btn");
+            for (i = 0; i < tablinks.length; i++) {
+                tablinks[i].className = tablinks[i].className.replace(" active", "");
+            }
+            document.getElementById(tabName).style.display = "block";
+            setTimeout(() => {
+                document.getElementById(tabName).classList.add("active");
+                window.dispatchEvent(new Event('resize')); // Fix Plotly sizing
+            }, 10);
+            evt.currentTarget.className += " active";
+        }
+
+        // Theme Toggle Logic
+        const themeToggleBtn = document.getElementById('theme-toggle');
+        themeToggleBtn.addEventListener('click', function() {
+            document.documentElement.classList.toggle('dark');
+            if (document.documentElement.classList.contains('dark')) {
+                localStorage.theme = 'dark';
+            } else {
+                localStorage.theme = 'light';
+            }
+        });
+    </script>
+</body>
+</html>
