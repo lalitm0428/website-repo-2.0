@@ -1,0 +1,1562 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Study Hub — AI Research &amp; Writing Companion</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <style>
+    /* ── Design tokens ── */
+    :root {
+      --bg:           #0f0f1a;
+      --surface:      #15151f;
+      --surface-2:    #1e1e2e;
+      --border:       #2a2a3d;
+      --text:         #f2f2f5;
+      --muted:        #8b8fa8;
+      --primary:      #6366f1;
+      --primary-dark: #4f46e5;
+      --primary-glow: rgba(99, 102, 241, 0.12);
+      --radius:       10px;
+    }
+
+    /* ── Reset ── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    /* ── Base ── */
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: 'Inter', system-ui, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+      overflow-x: hidden;
+    }
+
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+      pointer-events: none;
+      z-index: 9999;
+      opacity: 0.45;
+    }
+
+    /* ── Layout ── */
+    .container {
+      max-width: 1080px;
+      margin: 0 auto;
+      padding: 0 24px;
+    }
+
+    /* ── Nav ── */
+    nav {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: rgba(15, 15, 26, 0.82);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+      border-bottom: 1px solid var(--border);
+    }
+    nav .container {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      height: 56px;
+    }
+    .nav-brand {
+      font-size: 1rem;
+      font-weight: 800;
+      letter-spacing: -0.03em;
+      color: var(--text);
+      text-decoration: none;
+      flex-shrink: 0;
+    }
+    .nav-brand span { color: var(--primary); }
+    .nav-links {
+      display: flex;
+      gap: 28px;
+      list-style: none;
+    }
+    .nav-links a {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.7rem;
+      color: var(--muted);
+      text-decoration: none;
+      letter-spacing: 0.05em;
+      transition: color 0.15s;
+    }
+    .nav-links a:hover { color: var(--text); }
+
+    /* ── Hero ── */
+    .hero {
+      padding: 100px 0 76px;
+      text-align: center;
+    }
+    .hero-eyebrow {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.7rem;
+      letter-spacing: 0.14em;
+      color: var(--primary);
+      text-transform: uppercase;
+      margin-bottom: 22px;
+    }
+    .hero-title {
+      font-size: clamp(3rem, 8vw, 5.75rem);
+      font-weight: 900;
+      letter-spacing: -0.045em;
+      line-height: 1.03;
+      margin-bottom: 22px;
+      background: linear-gradient(140deg, #ffffff 0%, #c7d2fe 55%, #6366f1 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    .hero-tagline {
+      font-size: 1.125rem;
+      color: var(--muted);
+      font-style: italic;
+      font-weight: 400;
+      max-width: 500px;
+      margin: 0 auto 40px;
+    }
+    .hero-ctas {
+      display: flex;
+      gap: 12px;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+    .btn-primary {
+      display: inline-block;
+      background: var(--primary);
+      color: #fff;
+      border: none;
+      padding: 12px 30px;
+      border-radius: var(--radius);
+      font-size: 0.875rem;
+      font-weight: 600;
+      cursor: pointer;
+      text-decoration: none;
+      transition: background 0.15s, transform 0.12s, box-shadow 0.15s;
+      box-shadow: 0 0 0 0 rgba(99,102,241,0);
+    }
+    .btn-primary:hover {
+      background: var(--primary-dark);
+      transform: translateY(-1px);
+      box-shadow: 0 8px 24px rgba(99,102,241,0.35);
+    }
+    .btn-ghost {
+      display: inline-block;
+      background: transparent;
+      color: var(--text);
+      border: 1px solid var(--border);
+      padding: 12px 30px;
+      border-radius: var(--radius);
+      font-size: 0.875rem;
+      font-weight: 500;
+      cursor: pointer;
+      text-decoration: none;
+      transition: border-color 0.15s, background 0.15s;
+    }
+    .btn-ghost:hover {
+      border-color: var(--primary);
+      background: var(--primary-glow);
+    }
+    .hero-rule {
+      width: 100%;
+      height: 1px;
+      background: linear-gradient(90deg, transparent 0%, var(--primary) 50%, transparent 100%);
+      margin-top: 76px;
+      opacity: 0.45;
+    }
+
+    /* ── Section common ── */
+    section { padding: 84px 0; }
+    .section-label {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.68rem;
+      letter-spacing: 0.14em;
+      color: var(--primary);
+      text-transform: uppercase;
+      margin-bottom: 10px;
+    }
+    .section-title {
+      font-size: 1.75rem;
+      font-weight: 800;
+      letter-spacing: -0.035em;
+      margin-bottom: 48px;
+      color: var(--text);
+    }
+
+    /* ── Feature cards ── */
+    .feature-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 14px;
+    }
+    .feature-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 28px 26px;
+      transition: border-color 0.2s, background 0.2s;
+    }
+    .feature-card:hover {
+      border-color: rgba(99, 102, 241, 0.5);
+      background: #16161f;
+    }
+    .feature-num {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.68rem;
+      color: var(--primary);
+      letter-spacing: 0.08em;
+      margin-bottom: 12px;
+    }
+    .feature-card h3 {
+      font-size: 0.975rem;
+      font-weight: 700;
+      margin-bottom: 10px;
+      letter-spacing: -0.01em;
+      color: var(--text);
+    }
+    .feature-card p {
+      font-size: 0.86rem;
+      color: var(--muted);
+      line-height: 1.7;
+    }
+
+    /* ── Tools section ── */
+    #tools {
+      background: var(--surface);
+      border-top: 1px solid var(--border);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .tools-tab-bar {
+      display: flex;
+      gap: 4px;
+      overflow-x: auto;
+      padding-bottom: 2px;
+      margin-bottom: 36px;
+      scrollbar-width: none;
+      -ms-overflow-style: none;
+      border-bottom: 1px solid var(--border);
+    }
+    .tools-tab-bar::-webkit-scrollbar { display: none; }
+
+    .tool-tab {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.68rem;
+      letter-spacing: 0.06em;
+      color: var(--muted);
+      background: transparent;
+      border: none;
+      border-bottom: 2px solid transparent;
+      padding: 10px 20px;
+      cursor: pointer;
+      white-space: nowrap;
+      transition: color 0.15s, border-color 0.15s;
+      margin-bottom: -1px;
+    }
+    .tool-tab:hover { color: var(--text); }
+    .tool-tab.active {
+      color: var(--primary);
+      border-bottom-color: var(--primary);
+    }
+
+    .tool-panel { display: none; }
+    .tool-panel.active { display: grid; grid-template-columns: 1fr 1fr; gap: 40px; align-items: start; }
+
+    /* info column */
+    .tool-badge {
+      display: inline-block;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.62rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--primary);
+      background: var(--primary-glow);
+      border: 1px solid rgba(99,102,241,0.25);
+      border-radius: 4px;
+      padding: 2px 8px;
+      margin-bottom: 14px;
+    }
+    .tool-name {
+      font-size: 1.3rem;
+      font-weight: 800;
+      letter-spacing: -0.03em;
+      margin-bottom: 12px;
+      color: var(--text);
+    }
+    .tool-desc {
+      font-size: 0.875rem;
+      color: var(--muted);
+      line-height: 1.8;
+      margin-bottom: 24px;
+    }
+
+    /* numbered how-it-works steps */
+    .how-it-works {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+    .hiw-step {
+      display: flex;
+      gap: 12px;
+      align-items: flex-start;
+    }
+    .hiw-num {
+      width: 22px;
+      height: 22px;
+      border-radius: 50%;
+      background: var(--primary-glow);
+      border: 1px solid rgba(99,102,241,0.3);
+      color: var(--primary);
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.62rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      margin-top: 1px;
+    }
+    .hiw-text {
+      font-size: 0.84rem;
+      color: var(--muted);
+      line-height: 1.6;
+    }
+
+    /* mock window */
+    .tool-mock {
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      overflow: hidden;
+    }
+    .mock-bar {
+      background: var(--surface-2);
+      border-bottom: 1px solid var(--border);
+      padding: 9px 14px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .mock-dots { display: flex; gap: 5px; }
+    .mock-dot { width: 9px; height: 9px; border-radius: 50%; }
+    .dot-r { background: #ef4444; }
+    .dot-y { background: #f59e0b; }
+    .dot-g { background: #22c55e; }
+    .mock-label {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.62rem;
+      color: var(--muted);
+      flex: 1;
+      text-align: center;
+    }
+    .mock-body { padding: 18px; }
+    .mock-btn {
+      background: var(--primary);
+      color: #fff;
+      border: none;
+      border-radius: 6px;
+      padding: 7px 14px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.68rem;
+      cursor: default;
+    }
+
+    /* essay: stage bar */
+    .mock-stage-bar {
+      display: flex;
+      gap: 6px;
+      padding: 12px 14px;
+      border-bottom: 1px solid var(--border);
+      background: var(--surface-2);
+    }
+    .mock-stage {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.62rem;
+      padding: 4px 10px;
+      border-radius: 4px;
+      border: 1px solid var(--border);
+      color: var(--muted);
+      flex: 1;
+      text-align: center;
+    }
+    .mock-stage.done  { color: #4ade80; border-color: rgba(74,222,128,0.25); background: rgba(74,222,128,0.05); }
+    .mock-stage.active { background: var(--primary-glow); border-color: rgba(99,102,241,0.4); color: var(--primary); }
+
+    /* code block (essay outline) */
+    .mock-code-block {
+      background: var(--surface-2);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 12px 14px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.68rem;
+      color: #bfc2d6;
+      line-height: 1.7;
+      white-space: pre-wrap;
+    }
+
+    /* summarizer: split view */
+    .mock-split {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+    }
+    .mock-split-pane { padding: 14px; }
+    .mock-pane-label {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.6rem;
+      color: var(--muted);
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      margin-bottom: 8px;
+    }
+    .mock-summary-section { margin-bottom: 11px; }
+    .mock-summary-h {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.65rem;
+      color: var(--primary);
+      letter-spacing: 0.06em;
+      margin-bottom: 4px;
+    }
+    .mock-summary-p { font-size: 0.76rem; color: var(--muted); line-height: 1.6; }
+    .mock-summary-bullet {
+      font-size: 0.76rem;
+      color: var(--muted);
+      line-height: 1.7;
+      padding-left: 12px;
+      position: relative;
+    }
+    .mock-summary-bullet::before { content: '·'; position: absolute; left: 0; color: var(--primary); }
+
+    /* planner / tasks */
+    .mock-task-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 7px 0;
+      border-bottom: 1px solid var(--border);
+    }
+    .mock-task-row:last-child { border-bottom: none; }
+    .mock-task-check {
+      width: 14px; height: 14px;
+      border: 1px solid var(--border);
+      border-radius: 3px;
+      flex-shrink: 0;
+    }
+    .mock-task-check.done { background: var(--primary); border-color: var(--primary); }
+    .mock-task-title { flex: 1; font-size: 0.78rem; color: var(--text); }
+    .mock-task-badge {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.6rem;
+      padding: 2px 6px;
+      border-radius: 4px;
+      flex-shrink: 0;
+    }
+    .badge-high { color: #f87171; background: rgba(248,113,113,0.1); border: 1px solid rgba(248,113,113,0.25); }
+    .badge-med  { color: #fbbf24; background: rgba(251,191,36,0.1);  border: 1px solid rgba(251,191,36,0.25);  }
+    .badge-low  { color: #4ade80; background: rgba(74,222,128,0.1);  border: 1px solid rgba(74,222,128,0.25);  }
+
+    /* chat bubbles */
+    .mock-chat-msg { margin-bottom: 8px; }
+    .mock-chat-user { text-align: right; }
+    .mock-chat-bubble {
+      display: inline-block;
+      font-size: 0.76rem;
+      line-height: 1.55;
+      padding: 7px 11px;
+      border-radius: 8px;
+      max-width: 90%;
+    }
+    .mock-chat-user .mock-chat-bubble { background: var(--primary); color: #fff; }
+    .mock-chat-ai   .mock-chat-bubble { background: var(--surface-2); border: 1px solid var(--border); color: var(--muted); }
+
+    /* quiz: subject cards */
+    .mock-subject-cards {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 6px;
+      margin-bottom: 14px;
+    }
+    .mock-subject-card {
+      background: var(--surface-2);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 8px 4px;
+      text-align: center;
+      font-size: 0.72rem;
+      color: var(--muted);
+    }
+    .mock-subject-card.sel {
+      border-color: rgba(99,102,241,0.4);
+      color: #a5b4fc;
+      background: var(--primary-glow);
+    }
+
+    /* quiz: slider */
+    .mock-slider-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 12px;
+    }
+    .mock-slider-track {
+      flex: 1; height: 4px;
+      background: var(--border);
+      border-radius: 2px;
+      position: relative;
+    }
+    .mock-slider-fill {
+      position: absolute; left: 0; top: 0;
+      height: 100%; width: 40%;
+      background: var(--primary);
+      border-radius: 2px;
+    }
+    .mock-slider-thumb {
+      position: absolute;
+      top: -5px; left: calc(40% - 6px);
+      width: 14px; height: 14px;
+      background: white; border-radius: 50%;
+      border: 2px solid var(--primary);
+    }
+    .mock-slider-label {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.68rem;
+      color: var(--text);
+      white-space: nowrap;
+    }
+
+    /* quiz: progress bar */
+    .mock-progress-bar {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 12px;
+    }
+    .mock-progress-track {
+      flex: 1; height: 3px;
+      background: var(--border);
+      border-radius: 2px;
+    }
+    .mock-progress-fill {
+      height: 100%; width: 60%;
+      background: var(--primary);
+      border-radius: 2px;
+    }
+    .mock-progress-label {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.62rem;
+      color: var(--muted);
+      white-space: nowrap;
+    }
+
+    /* quiz: mcq */
+    .mock-mcq-q { font-size: 0.82rem; font-weight: 600; color: var(--text); margin-bottom: 10px; line-height: 1.5; }
+    .mock-mcq-options { display: flex; flex-direction: column; gap: 6px; }
+    .mock-mcq-opt {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.7rem;
+      color: var(--muted);
+      background: var(--surface-2);
+      border: 1px solid var(--border);
+      border-radius: 5px;
+      padding: 6px 10px;
+    }
+    .mock-mcq-opt.correct {
+      color: #4ade80;
+      border-color: rgba(74,222,128,0.3);
+      background: rgba(74,222,128,0.06);
+    }
+
+    .pipeline {
+      display: flex;
+      align-items: flex-start;
+      gap: 0;
+    }
+    .phase {
+      flex: 1;
+      border: 1px solid var(--border);
+      border-left: 3px solid var(--primary);
+      border-radius: var(--radius);
+      padding: 22px 20px;
+      background: var(--bg);
+    }
+    .phase-arrow {
+      display: flex;
+      align-items: flex-start;
+      padding: 0 10px;
+      color: rgba(99, 102, 241, 0.6);
+      font-size: 1.2rem;
+      flex-shrink: 0;
+      margin-top: 30px;
+    }
+    .phase-label {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.63rem;
+      color: var(--primary);
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      margin-bottom: 7px;
+    }
+    .phase h4 {
+      font-size: 0.9rem;
+      font-weight: 700;
+      margin-bottom: 14px;
+      letter-spacing: -0.01em;
+    }
+    .phase-steps {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 7px;
+      margin-bottom: 16px;
+    }
+    .phase-steps li {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.68rem;
+      color: var(--muted);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .phase-steps li::before {
+      content: '';
+      width: 4px;
+      height: 4px;
+      border-radius: 50%;
+      background: var(--primary);
+      flex-shrink: 0;
+      opacity: 0.8;
+    }
+    .phase-note {
+      font-size: 0.75rem;
+      color: #5e6180;
+      line-height: 1.65;
+      padding-top: 14px;
+      border-top: 1px solid var(--border);
+    }
+
+    /* ── Tech Stack ── */
+    .stack-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 32px 48px;
+    }
+    .stack-group h4 {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.68rem;
+      color: var(--muted);
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      margin-bottom: 12px;
+    }
+    .stack-pills {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 7px;
+    }
+    .pill {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.7rem;
+      padding: 4px 11px;
+      border-radius: 999px;
+      border: 1px solid var(--border);
+      background: var(--surface);
+      color: var(--muted);
+    }
+    .pill.hi {
+      border-color: rgba(99, 102, 241, 0.35);
+      background: var(--primary-glow);
+      color: #a5b4fc;
+    }
+
+    /* ── Sample Output ── */
+    .essay-mock {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      overflow: hidden;
+    }
+    .essay-mock-bar {
+      background: var(--surface-2);
+      border-bottom: 1px solid var(--border);
+      padding: 10px 16px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .mock-title {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.68rem;
+      color: var(--muted);
+      flex: 1;
+      text-align: center;
+    }
+    .essay-content { padding: 30px 34px 24px; }
+    .essay-content h2 {
+      font-size: 1.05rem;
+      font-weight: 700;
+      margin-bottom: 20px;
+      color: var(--text);
+      letter-spacing: -0.02em;
+    }
+    .essay-content p {
+      font-size: 0.875rem;
+      color: #bfc2d6;
+      line-height: 1.85;
+      margin-bottom: 16px;
+    }
+    .citation {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.68rem;
+      color: #a5b4fc;
+      background: var(--primary-glow);
+      border: 1px solid rgba(99,102,241,0.2);
+      padding: 1px 5px;
+      border-radius: 4px;
+      white-space: nowrap;
+    }
+    .essay-ellipsis {
+      text-align: center;
+      padding: 8px 0 4px;
+      color: #3d3f58;
+      font-size: 1rem;
+      letter-spacing: 0.3em;
+    }
+
+    /* ── Footer ── */
+    footer {
+      border-top: 1px solid var(--border);
+      padding: 36px 0;
+      text-align: center;
+    }
+    footer p {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.7rem;
+      color: #4a4d68;
+      letter-spacing: 0.06em;
+    }
+
+    /* ── Collapsed tab sections ── */
+    .panel-section {
+      grid-column: 1 / -1;
+      padding-top: 52px;
+      border-top: 1px solid var(--border);
+      margin-top: 8px;
+    }
+
+    /* schedule output mock */
+    .schedule-day { padding: 10px 0; border-bottom: 1px solid var(--border); }
+    .schedule-day:last-of-type { border-bottom: none; }
+    .schedule-day-label {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.72rem;
+      color: var(--primary);
+      font-weight: 600;
+      margin-bottom: 6px;
+      letter-spacing: 0.04em;
+    }
+    .schedule-task { font-size: 0.82rem; color: var(--muted); line-height: 1.7; padding-left: 8px; }
+
+    /* ── Responsive ── */
+    @media (max-width: 820px) {
+      .tool-panel.active { grid-template-columns: 1fr; gap: 24px; }
+      .mock-split { grid-template-columns: 1fr; }
+      .mock-split-pane + .mock-split-pane { border-left: none; border-top: 1px solid var(--border); }
+    }
+    @media (max-width: 640px) {
+      .feature-grid { grid-template-columns: 1fr; }
+      .pipeline { flex-direction: column; }
+      .phase-arrow { transform: rotate(90deg); align-self: center; margin: 4px 0; }
+      .stack-grid { grid-template-columns: 1fr; gap: 24px; }
+      .nav-links { display: none; }
+      .hero { padding: 64px 0 48px; }
+      section { padding: 56px 0; }
+      .essay-content { padding: 20px; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Nav -->
+  <nav>
+    <div class="container">
+      <a href="#" class="nav-brand">Study<span>Hub</span></a>
+      <ul class="nav-links">
+        <li><a href="#features">features</a></li>
+        <li><a href="#tools">tools</a></li>
+      </ul>
+    </div>
+  </nav>
+
+  <!-- Hero -->
+  <section class="hero">
+    <div class="container">
+      <p class="hero-eyebrow">AI-Powered Student Tools</p>
+      <h1 class="hero-title">Study Hub</h1>
+      <p class="hero-tagline">Autonomous web research, human-in-the-loop editing, and a fully cited essay draft — in minutes.</p>
+      <div class="hero-ctas">
+        <a href="#" class="btn-primary">Try It Live</a>
+        <a href="#" class="btn-ghost">View Source</a>
+      </div>
+    </div>
+    <div class="hero-rule"></div>
+  </section>
+
+  <!-- What It Does -->
+  <section id="features">
+    <div class="container">
+      <p class="section-label">What It Does</p>
+      <h2 class="section-title">From a topic to a cited draft, transparently.</h2>
+      <div class="feature-grid">
+
+        <div class="feature-card">
+          <p class="feature-num">01</p>
+          <h3>Autonomous Research Loop</h3>
+          <p>The agent drives its own tool-calling loop — generating search queries, scraping pages via Firecrawl, and saving structured notes — without manual prompting. Every step streams to the browser in real time.</p>
+        </div>
+
+        <div class="feature-card">
+          <p class="feature-num">02</p>
+          <h3>Human-in-the-Loop Essay</h3>
+          <p>Before a single sentence is written the agent surfaces a structured outline for review. Nothing advances until you approve — keeping you in control of the final argument and cited draft.</p>
+        </div>
+
+        <div class="feature-card">
+          <p class="feature-num">03</p>
+          <h3>Quiz &amp; Summarizer</h3>
+          <p>Paste any notes or reading and get auto-generated MCQ or short-answer practice questions, or a structured TL;DR summary with key points, main themes, and important terms.</p>
+        </div>
+
+        <div class="feature-card">
+          <p class="feature-num">04</p>
+          <h3>Planner &amp; RAG Syllabus</h3>
+          <p>An AI-powered task board and weekly schedule help you plan your studies. Drop in your syllabus and the agent extracts every deadline — then uses vector similarity search to surface relevant material at write time.</p>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- Tools -->
+  <section id="tools">
+    <div class="container">
+      <p class="section-label">User Tools</p>
+      <h2 class="section-title">Four tools. One study session.</h2>
+
+      <!-- Tab bar -->
+      <div class="tools-tab-bar" role="tablist">
+        <button class="tool-tab active" data-tab="essay"   role="tab" onclick="switchTab('essay')">essay_writer</button>
+        <button class="tool-tab"        data-tab="summ"    role="tab" onclick="switchTab('summ')">summarizer</button>
+        <button class="tool-tab"        data-tab="planner" role="tab" onclick="switchTab('planner')">study_planner</button>
+        <button class="tool-tab"        data-tab="quiz"    role="tab" onclick="switchTab('quiz')">quiz_generator</button>
+      </div>
+
+      <!-- ── Essay Writer ── -->
+      <div class="tool-panel active" id="tool-essay" role="tabpanel">
+        <div class="tool-info">
+          <div class="tool-badge">ai research tool</div>
+          <h3 class="tool-name">Essay Writer</h3>
+          <p class="tool-desc">Multi-stage pipeline: enter a topic and prompt, the agent autonomously searches the web, scrapes pages, and saves notes in real time — then surfaces an editable outline for your approval before streaming the full cited draft.</p>
+          <ol class="how-it-works">
+            <li class="hiw-step"><span class="hiw-num">1</span><span class="hiw-text">Enter your research topic and the specific essay question or argument you want to make</span></li>
+            <li class="hiw-step"><span class="hiw-num">2</span><span class="hiw-text">The agent autonomously searches (Tavily) and scrapes pages (Firecrawl) — every step streams to your browser via SSE</span></li>
+            <li class="hiw-step"><span class="hiw-num">3</span><span class="hiw-text">Review the generated outline and edit it however you like before anything is written</span></li>
+            <li class="hiw-step"><span class="hiw-num">4</span><span class="hiw-text">Approve the outline — the full essay streams with inline [Source: url] citations and saves to your session history</span></li>
+          </ol>
+        </div>
+        <div class="tool-mock">
+          <div class="mock-bar">
+            <div class="mock-dots"><div class="mock-dot dot-r"></div><div class="mock-dot dot-y"></div><div class="mock-dot dot-g"></div></div>
+            <span class="mock-label">essay writer — outline review</span>
+          </div>
+          <div class="mock-stage-bar">
+            <div class="mock-stage done">Research</div>
+            <div class="mock-stage active">Outline</div>
+            <div class="mock-stage">Draft</div>
+            <div class="mock-stage">Done</div>
+          </div>
+          <div class="mock-body">
+            <div style="font-family:'JetBrains Mono',monospace;font-size:0.62rem;color:var(--muted);margin-bottom:10px;letter-spacing:0.06em;text-transform:uppercase">Review outline before writing</div>
+            <div class="mock-code-block">I. Introduction
+   · AI as a turning point in higher education
+   · Thesis: adoption outpaces institutional adaptation
+
+II. The Adoption Landscape
+   · 68% of undergrads use AI tools (Pew 2024)
+   · Gap between use and disclosure
+
+III. Institutional Response
+   · MIT tutoring pilot — 15% exam improvement
+   · Redesigning assessments (EDUCAUSE 2025)
+
+IV. Conclusion
+   · AI as accelerant, not ghostwriter</div>
+            <div style="margin-top:14px;display:flex;gap:8px">
+              <span class="mock-btn" style="flex:1;text-align:center;display:block">Approve &amp; Write</span>
+              <span class="mock-btn" style="background:var(--surface-2);border:1px solid var(--border);color:var(--muted)">Edit</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="panel-section">
+          <p class="section-label">How It Works</p>
+          <h2 class="section-title">Three-phase agentic pipeline.</h2>
+          <div class="pipeline">
+            <div class="phase">
+              <p class="phase-label">Phase 1</p>
+              <h4>Research</h4>
+              <ul class="phase-steps">
+                <li>Generate 4 search queries (LLM)</li>
+                <li>Parallel Tavily web search</li>
+                <li>Deduplicate &amp; rank URLs</li>
+                <li>Parallel Firecrawl scrape</li>
+                <li>Snippet fallback if empty</li>
+              </ul>
+              <p class="phase-note">The LLM drives the loop autonomously via tool calling. A semaphore caps concurrent scrapes at 3 to stay within Firecrawl rate limits.</p>
+            </div>
+            <div class="phase-arrow">&#8594;</div>
+            <div class="phase">
+              <p class="phase-label">Phase 2</p>
+              <h4>Outline</h4>
+              <ul class="phase-steps">
+                <li>Batch note extraction (LLM)</li>
+                <li>Generate structured outline</li>
+                <li>Stream outline via SSE</li>
+                <li>Await user approval</li>
+              </ul>
+              <p class="phase-note">The outline is held in a server-side session store. The draft endpoint is unreachable until the client explicitly approves, enforcing the human-in-the-loop gate.</p>
+            </div>
+            <div class="phase-arrow">&#8594;</div>
+            <div class="phase">
+              <p class="phase-label">Phase 3</p>
+              <h4>Draft</h4>
+              <ul class="phase-steps">
+                <li>Approved outline + all notes</li>
+                <li>Streaming LLM write (SSE)</li>
+                <li>Inline [Source: url] citations</li>
+                <li>Persist session to Supabase</li>
+              </ul>
+              <p class="phase-note">The essay streams token-by-token so the browser renders each sentence as it arrives. On completion the full session — notes, outline, draft — is saved to Supabase PostgreSQL.</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="panel-section">
+          <p class="section-label">Tech Stack</p>
+          <h2 class="section-title">Every layer, no abstractions hidden.</h2>
+          <div class="stack-grid">
+            <div class="stack-group">
+              <h4>Frontend</h4>
+              <div class="stack-pills">
+                <span class="pill hi">Next.js 14</span>
+                <span class="pill hi">TypeScript</span>
+                <span class="pill">Tailwind CSS</span>
+                <span class="pill">shadcn/ui</span>
+                <span class="pill">Server-Sent Events</span>
+                <span class="pill">Three.js</span>
+              </div>
+            </div>
+            <div class="stack-group">
+              <h4>Backend</h4>
+              <div class="stack-pills">
+                <span class="pill hi">Python 3</span>
+                <span class="pill hi">FastAPI</span>
+                <span class="pill">uvicorn</span>
+                <span class="pill">sse-starlette</span>
+              </div>
+            </div>
+            <div class="stack-group">
+              <h4>AI &amp; Research</h4>
+              <div class="stack-pills">
+                <span class="pill hi">NVIDIA NIM</span>
+                <span class="pill hi">llama-3.1-70b-instruct</span>
+                <span class="pill">Tavily API</span>
+                <span class="pill">Firecrawl API</span>
+              </div>
+            </div>
+            <div class="stack-group">
+              <h4>Infrastructure</h4>
+              <div class="stack-pills">
+                <span class="pill">Supabase (PostgreSQL)</span>
+                <span class="pill">Expo (React Native)</span>
+                <span class="pill">NativeWind</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="panel-section">
+          <p class="section-label">Sample Output</p>
+          <h2 class="section-title">A finished essay, with inline citations.</h2>
+          <div class="essay-mock">
+            <div class="essay-mock-bar">
+              <div class="mock-dots">
+                <div class="mock-dot dot-r"></div>
+                <div class="mock-dot dot-y"></div>
+                <div class="mock-dot dot-g"></div>
+              </div>
+              <span class="mock-title">Draft — The Impact of AI on Higher Education</span>
+            </div>
+            <div class="essay-content">
+              <h2>The Impact of Artificial Intelligence on Higher Education</h2>
+              <p>The rapid proliferation of large language models has triggered a fundamental reassessment of how universities deliver and assess learning. Institutions ranging from MIT to community colleges are piloting AI tutoring systems that provide on-demand, personalized feedback on student writing <span class="citation">[Source: https://news.mit.edu/2024/ai-tutoring-pilot]</span>, while simultaneously grappling with questions of academic integrity that existing honor codes were never designed to address.</p>
+              <p>A 2024 survey of 1,200 undergraduates found that 68% had used a generative AI tool for coursework at least once, yet fewer than a third disclosed that use to an instructor <span class="citation">[Source: https://www.pewresearch.org/2024/ai-students]</span>. This gap between adoption and transparency reflects a broader tension: AI tools lower the floor for producing polished prose, but they do not automatically raise the ceiling for genuine comprehension or critical thought.</p>
+              <p>Leading researchers argue that the most durable educational response is not prohibition but redesign — moving toward oral defenses, process portfolios, and in-class synthesis tasks where reasoning is made visible <span class="citation">[Source: https://educause.edu/perspectives/2025/ai-assessment]</span>. The students who thrive will be those who treat AI as a research accelerant rather than a ghostwriter.</p>
+              <p class="essay-ellipsis">&#183; &#183; &#183;</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── Summarizer ── -->
+      <div class="tool-panel" id="tool-summ" role="tabpanel">
+        <div class="tool-info">
+          <div class="tool-badge">document tool</div>
+          <h3 class="tool-name">Notes Summarizer</h3>
+          <p class="tool-desc">Paste any lecture notes, research paper, textbook chapter, or article. The AI streams a four-section structured summary — TL;DR, Key Points, Main Themes, and Important Terms — displayed side-by-side with your original text.</p>
+          <ol class="how-it-works">
+            <li class="hiw-step"><span class="hiw-num">1</span><span class="hiw-text">Choose your content type — Lecture notes, Research paper, Textbook, or Article</span></li>
+            <li class="hiw-step"><span class="hiw-num">2</span><span class="hiw-text">Paste your text into the left panel — character count updates live</span></li>
+            <li class="hiw-step"><span class="hiw-num">3</span><span class="hiw-text">Click Summarize — the structured output streams token-by-token in the right panel</span></li>
+            <li class="hiw-step"><span class="hiw-num">4</span><span class="hiw-text">Compare original and summary side-by-side; click "Summarize again" to start over</span></li>
+          </ol>
+        </div>
+        <div class="tool-mock">
+          <div class="mock-bar">
+            <div class="mock-dots"><div class="mock-dot dot-r"></div><div class="mock-dot dot-y"></div><div class="mock-dot dot-g"></div></div>
+            <span class="mock-label">summarizer — split view</span>
+          </div>
+          <div class="mock-split">
+            <div class="mock-split-pane" style="border-right:1px solid var(--border)">
+              <div class="mock-pane-label">Original &middot; 1 842 chars</div>
+              <div style="display:flex;gap:5px;margin-bottom:10px;flex-wrap:wrap">
+                <span style="font-family:'JetBrains Mono',monospace;font-size:0.58rem;padding:3px 7px;border-radius:4px;background:var(--primary-glow);border:1px solid rgba(99,102,241,0.3);color:var(--primary)">Lecture</span>
+                <span style="font-family:'JetBrains Mono',monospace;font-size:0.58rem;padding:3px 7px;border-radius:4px;border:1px solid var(--border);color:var(--muted)">Paper</span>
+                <span style="font-family:'JetBrains Mono',monospace;font-size:0.58rem;padding:3px 7px;border-radius:4px;border:1px solid var(--border);color:var(--muted)">Textbook</span>
+                <span style="font-family:'JetBrains Mono',monospace;font-size:0.58rem;padding:3px 7px;border-radius:4px;border:1px solid var(--border);color:var(--muted)">Article</span>
+              </div>
+              <div style="font-size:0.76rem;color:var(--muted);line-height:1.7">The neural basis of memory consolidation involves two key processes: synaptic potentiation during encoding and offline replay during sleep. Hippocampal sharp-wave ripples coordinate the transfer of episodic memory traces to neocortical storage sites, a process that peaks during slow-wave sleep...</div>
+            </div>
+            <div class="mock-split-pane">
+              <div class="mock-pane-label">Summary</div>
+              <div class="mock-summary-section">
+                <div class="mock-summary-h">## TL;DR</div>
+                <div class="mock-summary-p">Memory consolidation relies on hippocampal replay during sleep to transfer short-term traces into long-term neocortical storage.</div>
+              </div>
+              <div class="mock-summary-section">
+                <div class="mock-summary-h">## Key Points</div>
+                <div class="mock-summary-bullet">Synaptic potentiation encodes memories during learning</div>
+                <div class="mock-summary-bullet">Sharp-wave ripples drive overnight offline replay</div>
+                <div class="mock-summary-bullet">Slow-wave sleep is the critical consolidation window</div>
+              </div>
+              <div class="mock-summary-section">
+                <div class="mock-summary-h">## Important Terms</div>
+                <div class="mock-summary-p"><strong style="color:#a5b4fc">Sharp-wave ripple:</strong> High-frequency hippocampal oscillation that replays memory sequences during rest.</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="panel-section">
+          <p class="section-label">How It Works</p>
+          <h2 class="section-title">Paste in. Summary out.</h2>
+          <div class="pipeline">
+            <div class="phase">
+              <p class="phase-label">Phase 1</p>
+              <h4>Prompt Assembly</h4>
+              <ul class="phase-steps">
+                <li>Content type tag selected</li>
+                <li>Student profile context prepended</li>
+                <li>Text truncated to 6 000 chars</li>
+                <li>4-section template injected</li>
+              </ul>
+              <p class="phase-note">The student's saved profile (subject, level, goals) is prepended so the LLM can tailor vocabulary and examples to the reader.</p>
+            </div>
+            <div class="phase-arrow">&#8594;</div>
+            <div class="phase">
+              <p class="phase-label">Phase 2</p>
+              <h4>LLM Streaming</h4>
+              <ul class="phase-steps">
+                <li>Sent to llama-3.3-70b-versatile</li>
+                <li>SSE stream opened immediately</li>
+                <li>Markdown chunks emitted per token</li>
+                <li>Done event closes the stream</li>
+              </ul>
+              <p class="phase-note">sse-starlette flushes each token immediately so the browser renders the summary sentence-by-sentence as it is generated.</p>
+            </div>
+            <div class="phase-arrow">&#8594;</div>
+            <div class="phase">
+              <p class="phase-label">Phase 3</p>
+              <h4>Render</h4>
+              <ul class="phase-steps">
+                <li>Chunks displayed in right panel</li>
+                <li>Markdown rendered live</li>
+                <li>Loader hidden on done event</li>
+                <li>Original text pinned on left</li>
+              </ul>
+              <p class="phase-note">The split-view layout keeps the original text visible throughout, so you can cross-reference as the structured summary builds in real time.</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="panel-section">
+          <p class="section-label">Tech Stack</p>
+          <h2 class="section-title">Every layer, no abstractions hidden.</h2>
+          <div class="stack-grid">
+            <div class="stack-group">
+              <h4>Frontend</h4>
+              <div class="stack-pills">
+                <span class="pill hi">Next.js 14</span>
+                <span class="pill hi">TypeScript</span>
+                <span class="pill">Tailwind CSS</span>
+                <span class="pill">shadcn/ui</span>
+                <span class="pill">Server-Sent Events</span>
+              </div>
+            </div>
+            <div class="stack-group">
+              <h4>Backend</h4>
+              <div class="stack-pills">
+                <span class="pill hi">Python 3</span>
+                <span class="pill hi">FastAPI</span>
+                <span class="pill">uvicorn</span>
+                <span class="pill">sse-starlette</span>
+              </div>
+            </div>
+            <div class="stack-group">
+              <h4>AI</h4>
+              <div class="stack-pills">
+                <span class="pill hi">NVIDIA NIM</span>
+                <span class="pill hi">llama-3.3-70b-versatile</span>
+              </div>
+            </div>
+            <div class="stack-group">
+              <h4>Infrastructure</h4>
+              <div class="stack-pills">
+                <span class="pill">Supabase (PostgreSQL)</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="panel-section">
+          <p class="section-label">Sample Output</p>
+          <h2 class="section-title">A structured summary, four sections.</h2>
+          <div class="essay-mock">
+            <div class="essay-mock-bar">
+              <div class="mock-dots">
+                <div class="mock-dot dot-r"></div>
+                <div class="mock-dot dot-y"></div>
+                <div class="mock-dot dot-g"></div>
+              </div>
+              <span class="mock-title">Summary — The Neural Basis of Memory Consolidation</span>
+            </div>
+            <div class="essay-content">
+              <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:22px;">
+                <span style="font-family:'JetBrains Mono',monospace;font-size:0.62rem;padding:3px 8px;border-radius:4px;background:var(--primary-glow);border:1px solid rgba(99,102,241,0.3);color:var(--primary)">Lecture notes</span>
+                <span style="font-family:'JetBrains Mono',monospace;font-size:0.62rem;color:#4ade80;letter-spacing:0.06em">Complete</span>
+              </div>
+              <div class="mock-summary-section" style="margin-bottom:18px">
+                <div class="mock-summary-h" style="font-size:0.78rem;margin-bottom:6px">## TL;DR</div>
+                <p style="font-size:0.875rem;color:#bfc2d6;line-height:1.85">Memory consolidation is an active process driven by hippocampal replay during sleep, transferring short-term traces into stable long-term neocortical storage.</p>
+              </div>
+              <div class="mock-summary-section" style="margin-bottom:18px">
+                <div class="mock-summary-h" style="font-size:0.78rem;margin-bottom:6px">## Key Points</div>
+                <div class="mock-summary-bullet" style="font-size:0.875rem;line-height:1.85">Synaptic potentiation during learning encodes the initial memory trace</div>
+                <div class="mock-summary-bullet" style="font-size:0.875rem;line-height:1.85">Sharp-wave ripples coordinate offline hippocampal-to-cortical transfer</div>
+                <div class="mock-summary-bullet" style="font-size:0.875rem;line-height:1.85">Slow-wave sleep is the critical window; REM consolidates procedural memory</div>
+                <div class="mock-summary-bullet" style="font-size:0.875rem;line-height:1.85">Sleep deprivation impairs consolidation by up to 40% in controlled studies</div>
+              </div>
+              <div class="mock-summary-section" style="margin-bottom:18px">
+                <div class="mock-summary-h" style="font-size:0.78rem;margin-bottom:6px">## Main Themes</div>
+                <p style="font-size:0.875rem;color:#bfc2d6;line-height:1.85">Sleep is positioned not as passive rest but as an active biological process essential for learning. The hippocampus acts as a temporary buffer, offloading traces to the neocortex during rest — with implications for study scheduling and sleep hygiene.</p>
+              </div>
+              <div class="mock-summary-section">
+                <div class="mock-summary-h" style="font-size:0.78rem;margin-bottom:6px">## Important Terms</div>
+                <p style="font-size:0.875rem;color:#bfc2d6;line-height:1.85"><strong style="color:#a5b4fc">Sharp-wave ripple:</strong> High-frequency hippocampal oscillation that replays memory sequences during rest. <strong style="color:#a5b4fc">Synaptic potentiation:</strong> Strengthening of synaptic connections through repeated activation.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── Study Planner ── -->
+      <div class="tool-panel" id="tool-planner" role="tabpanel">
+        <div class="tool-info">
+          <div class="tool-badge">ai planner</div>
+          <h3 class="tool-name">Study Planner</h3>
+          <p class="tool-desc">Conversational AI task manager. Chat to add assignments and deadlines, import a syllabus to auto-extract every due date, view tasks on a board or calendar, and generate a personalised Monday–Sunday study schedule from your task list.</p>
+          <ol class="how-it-works">
+            <li class="hiw-step"><span class="hiw-num">1</span><span class="hiw-text">Chat naturally — tell the AI about your assignments and it adds them to your task board automatically</span></li>
+            <li class="hiw-step"><span class="hiw-num">2</span><span class="hiw-text">Or import a syllabus — the parser extracts every exam, assignment, and quiz as an individual task</span></li>
+            <li class="hiw-step"><span class="hiw-num">3</span><span class="hiw-text">Switch between task board and calendar views to see what's coming up</span></li>
+            <li class="hiw-step"><span class="hiw-num">4</span><span class="hiw-text">Click "Generate Schedule" — the AI builds a Mon–Sun plan, prioritising by due date and urgency</span></li>
+          </ol>
+        </div>
+        <div class="tool-mock">
+          <div class="mock-bar">
+            <div class="mock-dots"><div class="mock-dot dot-r"></div><div class="mock-dot dot-y"></div><div class="mock-dot dot-g"></div></div>
+            <span class="mock-label">study planner</span>
+          </div>
+          <div style="display:grid;grid-template-columns:1fr 1fr">
+            <div style="padding:14px;border-right:1px solid var(--border)">
+              <div class="mock-pane-label">Chat</div>
+              <div class="mock-chat-msg mock-chat-user">
+                <div class="mock-chat-bubble">Add CS301 essay due June 12, high priority</div>
+              </div>
+              <div class="mock-chat-msg mock-chat-ai">
+                <div class="mock-chat-bubble">Added: CS301 Essay — due Jun 12, high priority. You now have 3 open tasks.</div>
+              </div>
+              <div class="mock-chat-msg mock-chat-user">
+                <div class="mock-chat-bubble">Generate my schedule</div>
+              </div>
+              <div class="mock-chat-msg mock-chat-ai">
+                <div class="mock-chat-bubble">Here's your Mon–Sun plan, prioritising CS301 (Jun 12) then ECON202 (Jun 18)&hellip;</div>
+              </div>
+            </div>
+            <div style="padding:14px">
+              <div class="mock-pane-label">Tasks</div>
+              <div class="mock-task-row">
+                <div class="mock-task-check"></div>
+                <div class="mock-task-title">CS301 Essay</div>
+                <div class="mock-task-badge badge-high">Jun 12</div>
+              </div>
+              <div class="mock-task-row">
+                <div class="mock-task-check"></div>
+                <div class="mock-task-title">ECON202 Midterm</div>
+                <div class="mock-task-badge badge-high">Jun 18</div>
+              </div>
+              <div class="mock-task-row" style="border-bottom:none;margin-bottom:12px">
+                <div class="mock-task-check done"></div>
+                <div class="mock-task-title" style="text-decoration:line-through;color:var(--muted)">HIST110 Reading</div>
+                <div class="mock-task-badge badge-low">done</div>
+              </div>
+              <span class="mock-btn" style="display:block;text-align:center">Generate Schedule</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="panel-section">
+          <p class="section-label">How It Works</p>
+          <h2 class="section-title">Chat, plan, schedule.</h2>
+          <div class="pipeline">
+            <div class="phase">
+              <p class="phase-label">Phase 1</p>
+              <h4>Planner Agent</h4>
+              <ul class="phase-steps">
+                <li>Message + history sent to LLM</li>
+                <li>Agent selects tool to call</li>
+                <li>get / add / update / delete tasks</li>
+                <li>Tool result returned to LLM</li>
+              </ul>
+              <p class="phase-note">The LLM is given 5 tools and autonomously chains calls — e.g. get_tasks then add_task — within a single conversation turn.</p>
+            </div>
+            <div class="phase-arrow">&#8594;</div>
+            <div class="phase">
+              <p class="phase-label">Phase 2</p>
+              <h4>Task Sync</h4>
+              <ul class="phase-steps">
+                <li>Tool calls hit Supabase directly</li>
+                <li>Task board refreshes via refreshKey</li>
+                <li>Calendar synced with task state</li>
+                <li>Syllabus parsed → bulk task insert</li>
+              </ul>
+              <p class="phase-note">React's refreshKey pattern causes the task board and calendar to re-fetch automatically every time the planner agent modifies data.</p>
+            </div>
+            <div class="phase-arrow">&#8594;</div>
+            <div class="phase">
+              <p class="phase-label">Phase 3</p>
+              <h4>Schedule</h4>
+              <ul class="phase-steps">
+                <li>All open tasks fetched</li>
+                <li>Today's date injected into prompt</li>
+                <li>Mon–Sun plan streamed via SSE</li>
+                <li>Sorted by due date &amp; priority</li>
+              </ul>
+              <p class="phase-note">The schedule prompt includes today's date so the LLM calculates days remaining and allocates study time proportionally to urgency.</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="panel-section">
+          <p class="section-label">Tech Stack</p>
+          <h2 class="section-title">Every layer, no abstractions hidden.</h2>
+          <div class="stack-grid">
+            <div class="stack-group">
+              <h4>Frontend</h4>
+              <div class="stack-pills">
+                <span class="pill hi">Next.js 14</span>
+                <span class="pill hi">TypeScript</span>
+                <span class="pill">Tailwind CSS</span>
+                <span class="pill">shadcn/ui</span>
+                <span class="pill">Server-Sent Events</span>
+              </div>
+            </div>
+            <div class="stack-group">
+              <h4>Backend</h4>
+              <div class="stack-pills">
+                <span class="pill hi">Python 3</span>
+                <span class="pill hi">FastAPI</span>
+                <span class="pill">uvicorn</span>
+                <span class="pill">sse-starlette</span>
+                <span class="pill">fastembed</span>
+              </div>
+            </div>
+            <div class="stack-group">
+              <h4>AI</h4>
+              <div class="stack-pills">
+                <span class="pill hi">NVIDIA NIM</span>
+                <span class="pill hi">llama-3.3-70b-versatile</span>
+                <span class="pill">BAAI/bge-small-en-v1.5</span>
+              </div>
+            </div>
+            <div class="stack-group">
+              <h4>Infrastructure</h4>
+              <div class="stack-pills">
+                <span class="pill">Supabase (PostgreSQL)</span>
+                <span class="pill">pgvector</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="panel-section">
+          <p class="section-label">Sample Output</p>
+          <h2 class="section-title">A generated weekly schedule.</h2>
+          <div class="essay-mock">
+            <div class="essay-mock-bar">
+              <div class="mock-dots">
+                <div class="mock-dot dot-r"></div>
+                <div class="mock-dot dot-y"></div>
+                <div class="mock-dot dot-g"></div>
+              </div>
+              <span class="mock-title">Weekly Schedule — Jun 9–15, 2026</span>
+            </div>
+            <div style="padding:24px 32px 20px">
+              <div class="schedule-day">
+                <div class="schedule-day-label">## Monday</div>
+                <div class="schedule-task">&middot; CS301 Essay &mdash; 2h: Draft introduction and thesis statement</div>
+                <div class="schedule-task">&middot; ECON202 &mdash; 30m: Review Chapters 5–6 before midterm</div>
+              </div>
+              <div class="schedule-day">
+                <div class="schedule-day-label">## Tuesday</div>
+                <div class="schedule-task">&middot; CS301 Essay &mdash; 2h: Body paragraphs, algorithm complexity analysis</div>
+                <div class="schedule-task">&middot; ECON202 &mdash; 1h: Practice problems, sets 3–4</div>
+              </div>
+              <div class="schedule-day">
+                <div class="schedule-day-label">## Wednesday</div>
+                <div class="schedule-task">&middot; CS301 Essay &mdash; 1h: Revise and polish final draft</div>
+                <div class="schedule-task">&middot; ECON202 Midterm prep &mdash; 2h: Full practice exam under timed conditions</div>
+              </div>
+              <div class="schedule-day">
+                <div class="schedule-day-label">## Thursday</div>
+                <div class="schedule-task">&middot; ECON202 &mdash; 2h: Review weak areas from practice exam</div>
+                <div class="schedule-task">&middot; Rest / light reading only</div>
+              </div>
+              <div class="schedule-day">
+                <div class="schedule-day-label">## Friday</div>
+                <div class="schedule-task">&middot; ECON202 Midterm exam &mdash; final 30m review before sitting</div>
+                <div class="schedule-task">&middot; Rest / review day after exam</div>
+              </div>
+              <p class="essay-ellipsis">&#183; &#183; &#183;</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── Quiz Generator ── -->
+      <div class="tool-panel" id="tool-quiz" role="tabpanel">
+        <div class="tool-info">
+          <div class="tool-badge">practice tool</div>
+          <h3 class="tool-name">Quiz Generator</h3>
+          <p class="tool-desc">Paste study notes or pick a pre-loaded subject, set question count (3–15) and format (MCQ or short answer), then take the quiz one question at a time — instant correct/incorrect feedback with a detailed explanation on every answer and a final percentage score.</p>
+          <ol class="how-it-works">
+            <li class="hiw-step"><span class="hiw-num">1</span><span class="hiw-text">Pick a pre-loaded subject (Biology, History, Physics) or paste your own study notes</span></li>
+            <li class="hiw-step"><span class="hiw-num">2</span><span class="hiw-text">Set question count (3–15) and choose MCQ or short-answer format</span></li>
+            <li class="hiw-step"><span class="hiw-num">3</span><span class="hiw-text">Answer one question at a time — a running score badge tracks your progress</span></li>
+            <li class="hiw-step"><span class="hiw-num">4</span><span class="hiw-text">Submit each answer to reveal correct/incorrect with a full explanation</span></li>
+            <li class="hiw-step"><span class="hiw-num">5</span><span class="hiw-text">See your final score with a percentage ring — Outstanding (80+), Great (60–79), Keep studying (&lt;60)</span></li>
+          </ol>
+        </div>
+        <div class="tool-mock">
+          <div class="mock-bar">
+            <div class="mock-dots"><div class="mock-dot dot-r"></div><div class="mock-dot dot-y"></div><div class="mock-dot dot-g"></div></div>
+            <span class="mock-label">quiz generator — question 3 of 5</span>
+          </div>
+          <div class="mock-body">
+            <div class="mock-subject-cards">
+              <div class="mock-subject-card">Biology</div>
+              <div class="mock-subject-card sel">History</div>
+              <div class="mock-subject-card">Physics</div>
+              <div class="mock-subject-card">Custom</div>
+            </div>
+            <div class="mock-slider-row">
+              <span class="mock-slider-label">5 questions</span>
+              <div class="mock-slider-track">
+                <div class="mock-slider-fill"></div>
+                <div class="mock-slider-thumb"></div>
+              </div>
+              <span class="mock-slider-label" style="font-size:0.62rem;color:var(--muted)">MCQ</span>
+            </div>
+            <div class="mock-progress-bar">
+              <div class="mock-progress-track"><div class="mock-progress-fill"></div></div>
+              <span class="mock-progress-label">Q 3 of 5 &nbsp;&middot;&nbsp; 2 correct</span>
+            </div>
+            <div class="mock-mcq-q">Which event directly triggered the outbreak of World War I in July 1914?</div>
+            <div class="mock-mcq-options">
+              <div class="mock-mcq-opt">A)&nbsp; German invasion of Belgium</div>
+              <div class="mock-mcq-opt correct">B)&nbsp; Assassination of Archduke Franz Ferdinand ✓</div>
+              <div class="mock-mcq-opt">C)&nbsp; Sinking of the Lusitania</div>
+              <div class="mock-mcq-opt">D)&nbsp; Austria-Hungary's ultimatum to Serbia</div>
+            </div>
+            <div style="margin-top:10px;padding-top:10px;border-top:1px solid var(--border);font-size:0.74rem;color:var(--muted);line-height:1.6">
+              <strong style="color:#a5b4fc">Explanation:</strong> The assassination of Archduke Franz Ferdinand in Sarajevo on June 28, 1914 set off the chain of ultimatums and mobilisations that led to war within six weeks.
+            </div>
+          </div>
+        </div>
+
+        <div class="panel-section">
+          <p class="section-label">How It Works</p>
+          <h2 class="section-title">Notes in. Questions out.</h2>
+          <div class="pipeline">
+            <div class="phase">
+              <p class="phase-label">Phase 1</p>
+              <h4>Prompt Build</h4>
+              <ul class="phase-steps">
+                <li>Notes truncated to 5 000 chars</li>
+                <li>Question count &amp; format injected</li>
+                <li>Student profile context appended</li>
+                <li>JSON schema included in prompt</li>
+              </ul>
+              <p class="phase-note">Pre-loaded subject cards ship with curated notes. Custom text is accepted as-is — the LLM handles any subject or language.</p>
+            </div>
+            <div class="phase-arrow">&#8594;</div>
+            <div class="phase">
+              <p class="phase-label">Phase 2</p>
+              <h4>Generate</h4>
+              <ul class="phase-steps">
+                <li>Single LLM call (no streaming)</li>
+                <li>JSON array parsed from response</li>
+                <li>Markdown fences stripped</li>
+                <li>Fallback: first '[' to last ']'</li>
+              </ul>
+              <p class="phase-note">The backend strips code fences and parses raw JSON so the frontend receives a clean array regardless of LLM formatting quirks.</p>
+            </div>
+            <div class="phase-arrow">&#8594;</div>
+            <div class="phase">
+              <p class="phase-label">Phase 3</p>
+              <h4>Quiz Loop</h4>
+              <ul class="phase-steps">
+                <li>Question-by-question state machine</li>
+                <li>Answer submitted → revealed</li>
+                <li>Running score badge updated</li>
+                <li>Final screen: ring + tier message</li>
+              </ul>
+              <p class="phase-note">The quiz is fully client-side after generation — no further API calls. Score and state are managed entirely in React state.</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="panel-section">
+          <p class="section-label">Tech Stack</p>
+          <h2 class="section-title">Every layer, no abstractions hidden.</h2>
+          <div class="stack-grid">
+            <div class="stack-group">
+              <h4>Frontend</h4>
+              <div class="stack-pills">
+                <span class="pill hi">Next.js 14</span>
+                <span class="pill hi">TypeScript</span>
+                <span class="pill">Tailwind CSS</span>
+                <span class="pill">shadcn/ui</span>
+              </div>
+            </div>
+            <div class="stack-group">
+              <h4>Backend</h4>
+              <div class="stack-pills">
+                <span class="pill hi">Python 3</span>
+                <span class="pill hi">FastAPI</span>
+                <span class="pill">uvicorn</span>
+              </div>
+            </div>
+            <div class="stack-group">
+              <h4>AI</h4>
+              <div class="stack-pills">
+                <span class="pill hi">NVIDIA NIM</span>
+                <span class="pill hi">llama-3.3-70b-versatile</span>
+              </div>
+            </div>
+            <div class="stack-group">
+              <h4>Infrastructure</h4>
+              <div class="stack-pills">
+                <span class="pill">Supabase (PostgreSQL)</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="panel-section">
+          <p class="section-label">Sample Output</p>
+          <h2 class="section-title">A completed quiz, with your score.</h2>
+          <div class="essay-mock">
+            <div class="essay-mock-bar">
+              <div class="mock-dots">
+                <div class="mock-dot dot-r"></div>
+                <div class="mock-dot dot-y"></div>
+                <div class="mock-dot dot-g"></div>
+              </div>
+              <span class="mock-title">Quiz Results — World War I History &nbsp;&middot;&nbsp; 5 questions</span>
+            </div>
+            <div style="padding:36px 28px;text-align:center;">
+              <svg width="110" height="110" style="display:block;margin:0 auto 20px" viewBox="0 0 110 110">
+                <circle cx="55" cy="55" r="44" fill="none" stroke="#2a2a3d" stroke-width="9"/>
+                <circle cx="55" cy="55" r="44" fill="none" stroke="#6366f1" stroke-width="9"
+                  stroke-dasharray="221 276" stroke-linecap="round"
+                  transform="rotate(-90 55 55)"/>
+                <text x="55" y="55" text-anchor="middle" dy="0.35em"
+                  font-family="JetBrains Mono, monospace" font-size="20" font-weight="700" fill="#f2f2f5">80%</text>
+              </svg>
+              <div style="font-size:1.4rem;font-weight:800;letter-spacing:-0.03em;margin-bottom:6px;">Outstanding!</div>
+              <div style="font-family:'JetBrains Mono',monospace;font-size:0.75rem;color:#8b8fa8;margin-bottom:18px;letter-spacing:0.04em">4 of 5 correct &nbsp;&middot;&nbsp; 3 min 42 sec</div>
+              <p style="font-size:0.875rem;color:#8b8fa8;line-height:1.8;max-width:380px;margin:0 auto 26px">You've mastered this material. Your strong performance on WWI causation and treaty analysis shows solid understanding of the period.</p>
+              <div style="display:flex;gap:10px;justify-content:center;">
+                <span class="mock-btn" style="background:var(--surface-2);border:1px solid var(--border);color:var(--muted)">Retry Quiz</span>
+                <span class="mock-btn">New Quiz</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+    <!-- Footer -->
+  <footer>
+    <div class="container">
+      <p>Built by Lalit &middot; 2026</p>
+    </div>
+  </footer>
+
+  <script>
+    function switchTab(id) {
+      document.querySelectorAll('.tool-tab').forEach(function(t) {
+        t.classList.toggle('active', t.dataset.tab === id);
+      });
+      document.querySelectorAll('.tool-panel').forEach(function(p) {
+        p.classList.toggle('active', p.id === 'tool-' + id);
+      });
+      var active = document.querySelector('.tool-tab.active');
+      if (active) active.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
+    }
+  </script>
+</body>
+</html>

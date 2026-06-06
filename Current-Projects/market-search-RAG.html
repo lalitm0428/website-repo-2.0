@@ -1,0 +1,732 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Market Intelligence RAG — Project Showcase</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Crimson+Pro:ital,wght@0,400;0,600;1,400;1,600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <style>
+    /* ── Design tokens ─────────────────────────────────────────────────────── */
+    :root {
+      --bg:          #080808;
+      --bg-card:     #0f0f0f;
+      --bg-card-alt: #111111;
+      --border:      #202020;
+      --border-dim:  #181818;
+
+      --text-primary: #f0ece3;
+      --text-muted:   #888880;
+      --text-dim:     #555550;
+
+      --amber:        #e8b84b;
+      --amber-dim:    rgba(232,184,75,0.12);
+      --amber-glow:   rgba(232,184,75,0.06);
+      --blue:         #4a9eff;
+      --blue-dim:     rgba(74,158,255,0.12);
+      --green:        #3cb371;
+
+      --font-display: 'Bebas Neue', 'Arial Black', sans-serif;
+      --font-body:    'Crimson Pro', Georgia, serif;
+      --font-mono:    'DM Mono', 'Courier New', monospace;
+    }
+
+    /* ── Reset & base ──────────────────────────────────────────────────────── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+
+    body {
+      background-color: var(--bg);
+      color: var(--text-primary);
+      font-family: var(--font-body);
+      font-size: 18px;
+      line-height: 1.6;
+      min-height: 100vh;
+    }
+
+    /* Grain texture overlay */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      z-index: 0;
+      pointer-events: none;
+      opacity: 0.04;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+      background-size: 200px 200px;
+    }
+
+    nav, main, footer, section { position: relative; z-index: 1; }
+
+    ::selection { background-color: var(--amber); color: #080808; }
+
+    a { color: inherit; text-decoration: none; }
+
+    /* ── Layout helpers ────────────────────────────────────────────────────── */
+    .container {
+      max-width: 960px;
+      margin: 0 auto;
+      padding: 0 24px;
+    }
+
+    /* ── Keyframes ─────────────────────────────────────────────────────────── */
+    @keyframes fadeInDown {
+      from { opacity: 0; transform: translateY(-14px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes fadeInUp {
+      from { opacity: 0; transform: translateY(22px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    /* ── Navigation ────────────────────────────────────────────────────────── */
+    nav {
+      border-bottom: 1px solid var(--border-dim);
+      padding: 18px 0;
+      animation: fadeInDown 0.5s cubic-bezier(0.16,1,0.3,1) both;
+    }
+
+    nav .container {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    nav .brand {
+      font-family: var(--font-display);
+      font-size: 20px;
+      letter-spacing: 0.05em;
+      color: var(--text-primary);
+    }
+
+    nav .nav-links {
+      display: flex;
+      gap: 28px;
+      list-style: none;
+      font-family: var(--font-mono);
+      font-size: 12px;
+      color: var(--text-muted);
+    }
+
+    nav .nav-links a:hover { color: var(--amber); }
+
+    /* ── Hero ──────────────────────────────────────────────────────────────── */
+    .hero {
+      padding: 80px 0 64px;
+      animation: fadeInUp 0.6s cubic-bezier(0.16,1,0.3,1) 0.08s both;
+    }
+
+    .hero-label {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      color: var(--amber);
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      margin-bottom: 16px;
+    }
+
+    .hero h1 {
+      font-family: var(--font-display);
+      font-size: clamp(54px, 10vw, 96px);
+      line-height: 0.95;
+      letter-spacing: 0.02em;
+      color: var(--text-primary);
+      margin-bottom: 24px;
+    }
+
+    .hero h1 span { color: var(--amber); }
+
+    .hero-sub {
+      font-family: var(--font-body);
+      font-style: italic;
+      font-size: clamp(18px, 2.5vw, 22px);
+      color: var(--text-muted);
+      max-width: 580px;
+      margin-bottom: 36px;
+      line-height: 1.5;
+    }
+
+    .hero-ctas {
+      display: flex;
+      gap: 14px;
+      flex-wrap: wrap;
+    }
+
+    .btn {
+      font-family: var(--font-mono);
+      font-size: 12px;
+      letter-spacing: 0.14em;
+      padding: 12px 28px;
+      border-radius: 2px;
+      cursor: pointer;
+      transition: opacity 0.2s, background 0.2s, color 0.2s;
+      display: inline-block;
+    }
+
+    .btn-primary {
+      background: var(--amber);
+      color: #080808;
+      border: 1px solid var(--amber);
+      font-weight: 500;
+    }
+    .btn-primary:hover { opacity: 0.85; }
+
+    .btn-ghost {
+      background: transparent;
+      color: var(--text-muted);
+      border: 1px solid var(--border);
+    }
+    .btn-ghost:hover { border-color: var(--amber); color: var(--amber); }
+
+    .hero-rule {
+      margin-top: 56px;
+      height: 1px;
+      background: linear-gradient(to right, var(--amber), transparent);
+      opacity: 0.4;
+    }
+
+    /* ── Section shared ────────────────────────────────────────────────────── */
+    section {
+      padding: 72px 0;
+      border-bottom: 1px solid var(--border-dim);
+    }
+
+    section:last-of-type { border-bottom: none; }
+
+    .section-label {
+      font-family: var(--font-mono);
+      font-size: 10px;
+      color: var(--amber);
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      margin-bottom: 10px;
+    }
+
+    .section-title {
+      font-family: var(--font-display);
+      font-size: clamp(32px, 5vw, 48px);
+      letter-spacing: 0.03em;
+      color: var(--text-primary);
+      margin-bottom: 40px;
+    }
+
+    /* ── Feature strip ─────────────────────────────────────────────────────── */
+    .features-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 2px;
+    }
+
+    @media (max-width: 700px) {
+      .features-grid { grid-template-columns: 1fr; }
+    }
+
+    .feature-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      padding: 28px 24px 32px;
+    }
+
+    .feature-card:first-child { border-left: 3px solid var(--amber); }
+
+    .feature-num {
+      font-family: var(--font-mono);
+      font-size: 10px;
+      color: var(--amber);
+      letter-spacing: 0.2em;
+      margin-bottom: 14px;
+    }
+
+    .feature-card h3 {
+      font-family: var(--font-display);
+      font-size: 22px;
+      letter-spacing: 0.04em;
+      color: var(--text-primary);
+      margin-bottom: 10px;
+    }
+
+    .feature-card p {
+      font-size: 16px;
+      color: var(--text-muted);
+      line-height: 1.6;
+    }
+
+    /* ── Architecture pipeline ─────────────────────────────────────────────── */
+    .pipeline {
+      display: flex;
+      flex-direction: column;
+      gap: 0;
+    }
+
+    .pipeline-query {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      margin-bottom: 0;
+    }
+
+    .query-box {
+      font-family: var(--font-mono);
+      font-size: 13px;
+      color: var(--amber);
+      border: 1px solid var(--amber);
+      background: var(--amber-dim);
+      padding: 10px 22px;
+      border-radius: 2px;
+      letter-spacing: 0.06em;
+    }
+
+    .query-hint {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      color: var(--text-dim);
+      font-style: italic;
+    }
+
+    .pipeline-connector {
+      display: flex;
+      align-items: center;
+      padding: 8px 0 8px 24px;
+      gap: 0;
+    }
+
+    .pipe-arrow {
+      width: 2px;
+      height: 32px;
+      background: linear-gradient(to bottom, var(--amber), rgba(232,184,75,0.2));
+      margin-left: 2px;
+      position: relative;
+    }
+
+    .pipe-arrow::after {
+      content: '▼';
+      position: absolute;
+      bottom: -14px;
+      left: 50%;
+      transform: translateX(-50%);
+      color: var(--amber);
+      font-size: 10px;
+      opacity: 0.5;
+    }
+
+    .phase-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-left: 3px solid var(--amber);
+      padding: 24px 28px;
+      position: relative;
+    }
+
+    .phase-header {
+      display: flex;
+      align-items: baseline;
+      gap: 14px;
+      margin-bottom: 14px;
+    }
+
+    .phase-num {
+      font-family: var(--font-display);
+      font-size: 36px;
+      color: var(--amber);
+      line-height: 1;
+      opacity: 0.6;
+    }
+
+    .phase-name {
+      font-family: var(--font-display);
+      font-size: 22px;
+      letter-spacing: 0.06em;
+      color: var(--text-primary);
+    }
+
+    .phase-steps {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      align-items: center;
+    }
+
+    .phase-step {
+      font-family: var(--font-mono);
+      font-size: 12px;
+      color: var(--text-muted);
+      background: var(--bg-card-alt);
+      border: 1px solid var(--border);
+      padding: 5px 12px;
+      border-radius: 2px;
+    }
+
+    .step-arrow {
+      font-family: var(--font-mono);
+      font-size: 14px;
+      color: var(--text-dim);
+    }
+
+    .phase-note {
+      margin-top: 12px;
+      font-size: 14px;
+      color: var(--text-dim);
+      font-style: italic;
+    }
+
+    /* ── Tech stack ────────────────────────────────────────────────────────── */
+    .stack-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 2px;
+    }
+
+    @media (max-width: 600px) {
+      .stack-grid { grid-template-columns: 1fr; }
+    }
+
+    .stack-col {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      padding: 28px 28px 32px;
+    }
+
+    .stack-col-label {
+      font-family: var(--font-mono);
+      font-size: 10px;
+      color: var(--amber);
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      margin-bottom: 18px;
+      padding-bottom: 10px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .stack-pills {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .pill {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      color: var(--text-muted);
+      border: 1px solid var(--border);
+      background: var(--bg-card-alt);
+      padding: 5px 12px;
+      border-radius: 2px;
+      letter-spacing: 0.04em;
+      transition: border-color 0.2s, color 0.2s;
+    }
+
+    .pill:hover { border-color: var(--amber); color: var(--amber); }
+
+    .pill.accent {
+      border-color: rgba(232,184,75,0.3);
+      color: rgba(232,184,75,0.7);
+    }
+
+    /* ── Sample output ─────────────────────────────────────────────────────── */
+    .output-wrap {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-top: 3px solid var(--amber);
+      overflow: hidden;
+    }
+
+    .output-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 10px 18px;
+      background: var(--bg-card-alt);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .output-bar-dots {
+      display: flex;
+      gap: 6px;
+    }
+
+    .dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: var(--border);
+    }
+
+    .output-bar-label {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      color: var(--text-dim);
+      letter-spacing: 0.08em;
+    }
+
+    pre {
+      overflow-x: auto;
+      padding: 28px 28px 32px;
+      font-family: var(--font-mono);
+      font-size: 13px;
+      line-height: 1.7;
+      color: var(--text-muted);
+      scrollbar-width: thin;
+      scrollbar-color: rgba(232,184,75,0.2) transparent;
+    }
+
+    pre::-webkit-scrollbar { height: 4px; }
+    pre::-webkit-scrollbar-track { background: transparent; }
+    pre::-webkit-scrollbar-thumb { background: rgba(232,184,75,0.2); border-radius: 2px; }
+
+    .tok-key    { color: #e8b84b; }
+    .tok-str    { color: #f0ece3; }
+    .tok-num    { color: #4a9eff; }
+    .tok-bool   { color: #3cb371; }
+    .tok-null   { color: #888880; }
+    .tok-punc   { color: #555550; }
+
+    /* ── Footer ────────────────────────────────────────────────────────────── */
+    footer {
+      padding: 40px 0;
+      text-align: center;
+    }
+
+    footer p {
+      font-family: var(--font-mono);
+      font-size: 12px;
+      color: var(--text-dim);
+      letter-spacing: 0.1em;
+    }
+
+    footer a { color: var(--text-dim); }
+    footer a:hover { color: var(--amber); }
+  </style>
+</head>
+<body>
+
+  <!-- ── Navigation ──────────────────────────────────────────────────────── -->
+  <nav>
+    <div class="container">
+      <span class="brand">Market Intelligence RAG</span>
+      <ul class="nav-links">
+        <li><a href="#architecture">Architecture</a></li>
+        <li><a href="#stack">Stack</a></li>
+        <li><a href="#output">Output</a></li>
+      </ul>
+    </div>
+  </nav>
+
+  <main>
+    <div class="container">
+
+      <!-- ── Hero ──────────────────────────────────────────────────────── -->
+      <section class="hero" style="border-bottom:none; padding-bottom: 0;">
+        <p class="hero-label">Project — AI / RAG</p>
+        <h1>Market<br /><span>Intelligence</span><br />RAG</h1>
+        <p class="hero-sub">
+          Turn any question into a structured market report — powered by RAG,
+          NVIDIA NIM, and live web search.
+        </p>
+        <div class="hero-ctas">
+          <!-- TODO: replace # with real URLs -->
+          <a class="btn btn-primary" href="#">Live Demo</a>
+          <a class="btn btn-ghost" href="#">View Source</a>
+        </div>
+        <div class="hero-rule"></div>
+      </section>
+
+      <!-- ── What It Does ───────────────────────────────────────────────── -->
+      <section>
+        <p class="section-label">Overview</p>
+        <h2 class="section-title">What It Does</h2>
+        <div class="features-grid">
+          <div class="feature-card">
+            <p class="feature-num">01 — SEARCH</p>
+            <h3>Live Web Search</h3>
+            <p>Fetches fresh results via the Tavily API. Reports are grounded in current data, not stale model knowledge.</p>
+          </div>
+          <div class="feature-card">
+            <p class="feature-num">02 — RAG</p>
+            <h3>RAG Pipeline</h3>
+            <p>Chunks and embeds content with NVIDIA NIM, then retrieves the most semantically relevant passages from a ChromaDB vector store.</p>
+          </div>
+          <div class="feature-card">
+            <p class="feature-num">03 — REPORT</p>
+            <h3>Structured Reports</h3>
+            <p>Outputs validated JSON with key metrics, interactive charts, sentiment scores, competitive landscape, risk factors, and an analyst verdict.</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- ── Architecture ───────────────────────────────────────────────── -->
+      <section id="architecture">
+        <p class="section-label">System Design</p>
+        <h2 class="section-title">Pipeline Architecture</h2>
+
+        <div class="pipeline">
+
+          <!-- Entry point -->
+          <div class="pipeline-query">
+            <div class="query-box">USER QUERY</div>
+            <span class="query-hint">e.g. "global EV battery market 2026"</span>
+          </div>
+
+          <div class="pipeline-connector"><div class="pipe-arrow"></div></div>
+
+          <!-- Phase 1 -->
+          <div class="phase-card">
+            <div class="phase-header">
+              <span class="phase-num">01</span>
+              <span class="phase-name">DISPATCH</span>
+            </div>
+            <div class="phase-steps">
+              <span class="phase-step">FastAPI /research/start</span>
+              <span class="step-arrow">→</span>
+              <span class="phase-step">Celery task enqueued</span>
+              <span class="step-arrow">→</span>
+              <span class="phase-step">task_id returned (202)</span>
+            </div>
+            <p class="phase-note">Client polls /status/{task_id} every 3 seconds while the worker runs async.</p>
+          </div>
+
+          <div class="pipeline-connector"><div class="pipe-arrow"></div></div>
+
+          <!-- Phase 2 -->
+          <div class="phase-card">
+            <div class="phase-header">
+              <span class="phase-num">02</span>
+              <span class="phase-name">INGESTION</span>
+            </div>
+            <div class="phase-steps">
+              <span class="phase-step">Tavily Web Search (8 results)</span>
+              <span class="step-arrow">→</span>
+              <span class="phase-step">Chunking (500 tok, 100 overlap)</span>
+              <span class="step-arrow">→</span>
+              <span class="phase-step">NVIDIA NIM Embeddings</span>
+              <span class="step-arrow">→</span>
+              <span class="phase-step">ChromaDB upsert</span>
+            </div>
+            <p class="phase-note">nvidia/nv-embedqa-e5-v5 encodes chunks in batches of 32.</p>
+          </div>
+
+          <div class="pipeline-connector"><div class="pipe-arrow"></div></div>
+
+          <!-- Phase 3 -->
+          <div class="phase-card">
+            <div class="phase-header">
+              <span class="phase-num">03</span>
+              <span class="phase-name">GENERATION</span>
+            </div>
+            <div class="phase-steps">
+              <span class="phase-step">ChromaDB retrieval (top-5)</span>
+              <span class="step-arrow">→</span>
+              <span class="phase-step">Prompt + JSON schema</span>
+              <span class="step-arrow">→</span>
+              <span class="phase-step">NVIDIA NIM LLM</span>
+              <span class="step-arrow">→</span>
+              <span class="phase-step">Pydantic validation</span>
+            </div>
+            <p class="phase-note">openai/gpt-oss-120b generates structured output; on schema failure the model self-corrects (max 2 retries).</p>
+          </div>
+
+          <div class="pipeline-connector"><div class="pipe-arrow"></div></div>
+
+          <!-- Phase 4 -->
+          <div class="phase-card">
+            <div class="phase-header">
+              <span class="phase-num">04</span>
+              <span class="phase-name">VISUALIZATION</span>
+            </div>
+            <div class="phase-steps">
+              <span class="phase-step">Structured JSON report</span>
+              <span class="step-arrow">→</span>
+              <span class="phase-step">Next.js React frontend</span>
+              <span class="step-arrow">→</span>
+              <span class="phase-step">Recharts (bar / line / donut)</span>
+              <span class="step-arrow">→</span>
+              <span class="phase-step">PDF export</span>
+            </div>
+            <p class="phase-note">8-section interactive report: thesis, metrics, charts, sentiment, landscape, risks, opportunities, verdict.</p>
+          </div>
+
+        </div>
+      </section>
+
+      <!-- ── Tech Stack ──────────────────────────────────────────────────── -->
+      <section id="stack">
+        <p class="section-label">Technologies</p>
+        <h2 class="section-title">Tech Stack</h2>
+        <div class="stack-grid">
+          <div class="stack-col">
+            <p class="stack-col-label">Frontend</p>
+            <div class="stack-pills">
+              <span class="pill accent">Next.js 15</span>
+              <span class="pill accent">React 19</span>
+              <span class="pill">Tailwind CSS</span>
+              <span class="pill">Recharts</span>
+              <span class="pill">Bebas Neue</span>
+              <span class="pill">Crimson Pro</span>
+              <span class="pill">DM Mono</span>
+            </div>
+          </div>
+          <div class="stack-col">
+            <p class="stack-col-label">Backend &amp; AI</p>
+            <div class="stack-pills">
+              <span class="pill accent">NVIDIA NIM</span>
+              <span class="pill accent">ChromaDB</span>
+              <span class="pill accent">Tavily API</span>
+              <span class="pill">FastAPI</span>
+              <span class="pill">Celery</span>
+              <span class="pill">Redis</span>
+              <span class="pill">LangChain</span>
+              <span class="pill">Pydantic</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ── Sample Output ───────────────────────────────────────────────── -->
+      <section id="output">
+        <p class="section-label">Output Schema</p>
+        <h2 class="section-title">Sample Report Output</h2>
+        <div class="output-wrap">
+          <div class="output-bar">
+            <div class="output-bar-dots">
+              <div class="dot"></div>
+              <div class="dot"></div>
+              <div class="dot"></div>
+            </div>
+            <span class="output-bar-label">market-intelligence-report.json</span>
+          </div>
+          <pre><code><span class="tok-punc">{</span>
+  <span class="tok-key">"query"</span><span class="tok-punc">:</span>            <span class="tok-str">"global EV battery market 2026"</span><span class="tok-punc">,</span>
+  <span class="tok-key">"generated_at"</span><span class="tok-punc">:</span>    <span class="tok-str">"2026-06-06T14:32:01Z"</span><span class="tok-punc">,</span>
+  <span class="tok-key">"market_thesis"</span><span class="tok-punc">:</span>   <span class="tok-str">"The global EV battery market is entering a supply-driven growth phase, with lithium-iron-phosphate chemistries gaining share over NMC as cost pressures intensify."</span><span class="tok-punc">,</span>
+  <span class="tok-key">"key_metrics"</span><span class="tok-punc">: [</span>
+    <span class="tok-punc">{</span> <span class="tok-key">"label"</span><span class="tok-punc">:</span> <span class="tok-str">"Market Size 2026"</span><span class="tok-punc">,</span>  <span class="tok-key">"value"</span><span class="tok-punc">:</span> <span class="tok-str">"$142B"</span><span class="tok-punc">,</span>   <span class="tok-key">"source"</span><span class="tok-punc">:</span> <span class="tok-str">"BloombergNEF"</span> <span class="tok-punc">},</span>
+    <span class="tok-punc">{</span> <span class="tok-key">"label"</span><span class="tok-punc">:</span> <span class="tok-str">"YoY Growth"</span><span class="tok-punc">,</span>       <span class="tok-key">"value"</span><span class="tok-punc">:</span> <span class="tok-str">"28.4%"</span><span class="tok-punc">,</span>  <span class="tok-key">"source"</span><span class="tok-punc">:</span> <span class="tok-str">"Wood Mackenzie"</span> <span class="tok-punc">},</span>
+    <span class="tok-punc">{</span> <span class="tok-key">"label"</span><span class="tok-punc">:</span> <span class="tok-str">"LFP Share"</span><span class="tok-punc">,</span>        <span class="tok-key">"value"</span><span class="tok-punc">:</span> <span class="tok-str">"61%"</span><span class="tok-punc">,</span>    <span class="tok-key">"source"</span><span class="tok-punc">:</span> <span class="tok-str">"SNE Research"</span> <span class="tok-punc">}</span>
+  <span class="tok-punc">],</span>
+  <span class="tok-key">"sentiment"</span><span class="tok-punc">: {</span>
+    <span class="tok-key">"overall"</span><span class="tok-punc">:</span>  <span class="tok-str">"bullish"</span><span class="tok-punc">,</span>
+    <span class="tok-key">"score"</span><span class="tok-punc">:</span>   <span class="tok-num">0.78</span><span class="tok-punc">,</span>
+    <span class="tok-key">"evidence"</span><span class="tok-punc">:</span> <span class="tok-str">"Sustained demand from OEM offtake agreements and IRA tax-credit tailwinds."</span>
+  <span class="tok-punc">},</span>
+  <span class="tok-key">"risk_factors"</span><span class="tok-punc">: [</span>
+    <span class="tok-str">"Cobalt supply concentration in DRC"</span><span class="tok-punc">,</span>
+    <span class="tok-str">"Lithium price volatility after 2023 correction"</span>
+  <span class="tok-punc">],</span>
+  <span class="tok-key">"analyst_verdict"</span><span class="tok-punc">:</span> <span class="tok-str">"Accumulate. Near-term margin compression offsets by structural volume growth and falling cell costs."</span>
+<span class="tok-punc">}</span>
+</code></pre>
+        </div>
+      </section>
+
+    </div><!-- /container -->
+  </main>
+
+  <!-- ── Footer ──────────────────────────────────────────────────────────── -->
+  <footer>
+    <div class="container">
+      <p>Built by <a href="#">Lalit</a> &nbsp;·&nbsp; 2026</p>
+    </div>
+  </footer>
+
+</body>
+</html>
