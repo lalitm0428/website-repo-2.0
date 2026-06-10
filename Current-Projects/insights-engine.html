@@ -1,0 +1,759 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Insight Engine — Multi-agent social analytics</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400;1,500&family=DM+Mono:ital,wght@0,300;0,400;0,500;1,300&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600&display=swap" rel="stylesheet" />
+  <style>
+    /* ─── Design tokens ─────────────────────────────────────────────── */
+    :root {
+      --bg:            #0C0B0A;
+      --surface:       rgba(21, 19, 17, 0.72);
+      --surface-2:     rgba(28, 26, 22, 0.68);
+      --surface-3:     rgba(36, 33, 25, 0.75);
+      --border:        rgba(255, 248, 238, 0.07);
+      --border-strong: rgba(255, 248, 238, 0.13);
+      --text-1:        #F0E8DC;
+      --text-2:        #96908A;
+      --text-3:        #4E4A45;
+      --accent:        #C87C52;
+      --accent-bright: #E0976A;
+      --accent-dim:    rgba(200, 124, 82, 0.12);
+      --accent-border: rgba(200, 124, 82, 0.28);
+      --teal:          #68B4A2;
+      --teal-dim:      rgba(104, 180, 162, 0.12);
+      --teal-border:   rgba(104, 180, 162, 0.28);
+
+      --font-display: 'Cormorant Garamond', 'Iowan Old Style', Georgia, serif;
+      --font-body:    'DM Sans', 'Helvetica Neue', sans-serif;
+      --font-mono:    'DM Mono', 'Menlo', monospace;
+
+      --radius-sm: 8px;
+      --radius-md: 12px;
+      --radius-lg: 18px;
+      --radius-xl: 24px;
+    }
+
+    /* ─── Reset & base ──────────────────────────────────────────────── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      background: var(--bg);
+      color: var(--text-1);
+      font-family: var(--font-body);
+      font-size: 0.9375rem;
+      line-height: 1.75;
+      -webkit-font-smoothing: antialiased;
+      overflow-x: hidden;
+    }
+
+    /* grain overlay */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      z-index: 0;
+      pointer-events: none;
+      opacity: 0.035;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23n)' opacity='1'/%3E%3C/svg%3E");
+      background-repeat: repeat;
+    }
+
+    /* ─── Layout helpers ────────────────────────────────────────────── */
+    .container {
+      position: relative;
+      z-index: 1;
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 0 clamp(1.25rem, 5vw, 3rem);
+    }
+
+    section { padding: clamp(4rem, 8vw, 7rem) 0; }
+
+    /* ─── Nav ───────────────────────────────────────────────────────── */
+    nav {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: rgba(12, 11, 10, 0.82);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .nav-inner {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 1rem clamp(1.25rem, 5vw, 3rem);
+      max-width: 1100px;
+      margin: 0 auto;
+    }
+
+    .nav-brand {
+      font-family: var(--font-display);
+      font-size: 1.35rem;
+      font-weight: 500;
+      color: var(--text-1);
+      text-decoration: none;
+      letter-spacing: 0.01em;
+    }
+
+    .nav-links {
+      display: flex;
+      gap: 2rem;
+      list-style: none;
+    }
+
+    .nav-links a {
+      font-family: var(--font-mono);
+      font-size: 0.72rem;
+      font-weight: 400;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--text-2);
+      text-decoration: none;
+      transition: color 0.15s ease;
+    }
+
+    .nav-links a:hover { color: var(--accent-bright); }
+
+    @media (max-width: 640px) {
+      .nav-links { display: none; }
+    }
+
+    /* ─── Hero ──────────────────────────────────────────────────────── */
+    #overview {
+      padding-top: clamp(5rem, 12vw, 10rem);
+      padding-bottom: clamp(4rem, 8vw, 7rem);
+    }
+
+    .hero-kicker {
+      font-family: var(--font-mono);
+      font-size: 0.66rem;
+      font-weight: 400;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 1.5rem;
+    }
+
+    .hero-title {
+      font-family: var(--font-display);
+      font-size: clamp(3.2rem, 7vw, 6rem);
+      font-weight: 300;
+      line-height: 1.05;
+      letter-spacing: -0.01em;
+      color: var(--text-1);
+      margin-bottom: 1.5rem;
+    }
+
+    .hero-title em {
+      font-style: italic;
+      color: var(--accent-bright);
+    }
+
+    .hero-tagline {
+      font-family: var(--font-display);
+      font-style: italic;
+      font-size: clamp(1.15rem, 2.2vw, 1.55rem);
+      font-weight: 300;
+      color: var(--text-2);
+      max-width: 560px;
+      line-height: 1.55;
+      margin-bottom: 2.75rem;
+    }
+
+    .hero-ctas {
+      display: flex;
+      gap: 1rem;
+      flex-wrap: wrap;
+    }
+
+    .btn {
+      display: inline-block;
+      font-family: var(--font-mono);
+      font-size: 0.72rem;
+      font-weight: 500;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      text-decoration: none;
+      padding: 0.75rem 1.75rem;
+      border-radius: var(--radius-sm);
+      transition: transform 0.15s ease, box-shadow 0.15s ease, background 0.15s ease;
+    }
+
+    .btn:hover { transform: translateY(-2px); }
+
+    .btn-primary {
+      background: var(--accent);
+      color: #0C0B0A;
+      border: 1px solid var(--accent);
+    }
+
+    .btn-primary:hover {
+      background: var(--accent-bright);
+      border-color: var(--accent-bright);
+      box-shadow: 0 8px 24px rgba(200, 124, 82, 0.3);
+    }
+
+    .btn-ghost {
+      background: transparent;
+      color: var(--text-2);
+      border: 1px solid var(--border-strong);
+    }
+
+    .btn-ghost:hover {
+      color: var(--text-1);
+      border-color: var(--accent-border);
+    }
+
+    .hero-rule {
+      margin-top: clamp(4rem, 8vw, 7rem);
+      border: none;
+      height: 1px;
+      background: linear-gradient(90deg, var(--accent) 0%, rgba(200,124,82,0.3) 40%, transparent 100%);
+    }
+
+    /* ─── Section headings ──────────────────────────────────────────── */
+    .section-label {
+      font-family: var(--font-mono);
+      font-size: 0.66rem;
+      font-weight: 400;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 0.75rem;
+    }
+
+    .section-title {
+      font-family: var(--font-display);
+      font-size: clamp(2rem, 4vw, 3rem);
+      font-weight: 400;
+      line-height: 1.15;
+      color: var(--text-1);
+      margin-bottom: 3rem;
+    }
+
+    /* ─── Feature cards ─────────────────────────────────────────────── */
+    .cards-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 1.25rem;
+    }
+
+    @media (max-width: 640px) {
+      .cards-grid { grid-template-columns: 1fr; }
+    }
+
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 2rem;
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      transition: border-color 0.2s ease, transform 0.2s ease;
+    }
+
+    .card:hover {
+      border-color: var(--accent-border);
+      transform: translateY(-2px);
+    }
+
+    .card-num {
+      font-family: var(--font-mono);
+      font-size: 0.66rem;
+      font-weight: 400;
+      letter-spacing: 0.14em;
+      color: var(--accent);
+      margin-bottom: 0.75rem;
+    }
+
+    .card-title {
+      font-family: var(--font-display);
+      font-size: 1.35rem;
+      font-weight: 500;
+      color: var(--text-1);
+      margin-bottom: 0.75rem;
+      line-height: 1.25;
+    }
+
+    .card p {
+      font-size: 0.875rem;
+      color: var(--text-2);
+      line-height: 1.75;
+    }
+
+    /* ─── Architecture diagram ──────────────────────────────────────── */
+    #architecture { background: var(--surface-2); }
+
+    .arch-flow {
+      display: flex;
+      flex-direction: column;
+      gap: 1.5rem;
+    }
+
+    .arch-row {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      flex-wrap: wrap;
+    }
+
+    .arch-row.center { justify-content: center; }
+
+    .arch-node {
+      background: var(--surface);
+      border: 1px solid var(--border-strong);
+      border-left: 3px solid var(--accent);
+      border-radius: var(--radius-md);
+      padding: 1.1rem 1.4rem;
+      backdrop-filter: blur(12px);
+      flex: 1;
+      min-width: 180px;
+    }
+
+    .arch-node.teal { border-left-color: var(--teal); }
+    .arch-node.entry { border-left-color: var(--text-3); }
+
+    .arch-node-label {
+      font-family: var(--font-mono);
+      font-size: 0.66rem;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 0.3rem;
+    }
+
+    .arch-node.teal .arch-node-label { color: var(--teal); }
+    .arch-node.entry .arch-node-label { color: var(--text-3); }
+
+    .arch-node-name {
+      font-family: var(--font-display);
+      font-size: 1.1rem;
+      font-weight: 500;
+      color: var(--text-1);
+      margin-bottom: 0.4rem;
+    }
+
+    .arch-node-note {
+      font-size: 0.8rem;
+      color: var(--text-2);
+      line-height: 1.6;
+    }
+
+    .arch-arrow {
+      font-family: var(--font-mono);
+      font-size: 1.2rem;
+      color: var(--accent-border);
+      flex-shrink: 0;
+      padding: 0 0.25rem;
+    }
+
+    .arch-arrow.down {
+      display: block;
+      text-align: center;
+      transform: rotate(90deg);
+    }
+
+    .arch-agents {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1rem;
+    }
+
+    @media (max-width: 640px) {
+      .arch-agents { grid-template-columns: 1fr; }
+      .arch-arrow { display: none; }
+    }
+
+    .arch-sse {
+      text-align: center;
+      padding: 0.75rem 1.5rem;
+      border: 1px dashed var(--border-strong);
+      border-radius: var(--radius-sm);
+      font-family: var(--font-mono);
+      font-size: 0.75rem;
+      color: var(--text-3);
+      letter-spacing: 0.08em;
+    }
+
+    .arch-sse span {
+      color: var(--teal);
+    }
+
+    /* ─── Tech stack ────────────────────────────────────────────────── */
+    .stack-groups {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 2rem 3rem;
+    }
+
+    @media (max-width: 640px) {
+      .stack-groups { grid-template-columns: 1fr; }
+    }
+
+    .stack-group-label {
+      font-family: var(--font-mono);
+      font-size: 0.66rem;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--text-3);
+      margin-bottom: 0.9rem;
+    }
+
+    .stack-pills {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+    }
+
+    .pill {
+      font-family: var(--font-mono);
+      font-size: 0.72rem;
+      font-weight: 400;
+      padding: 0.35rem 0.85rem;
+      border-radius: 999px;
+      border: 1px solid var(--border-strong);
+      background: var(--surface-2);
+      color: var(--text-2);
+      white-space: nowrap;
+    }
+
+    .pill.accent {
+      border-color: var(--accent-border);
+      background: var(--accent-dim);
+      color: var(--accent-bright);
+    }
+
+    .pill.teal {
+      border-color: var(--teal-border);
+      background: var(--teal-dim);
+      color: var(--teal);
+    }
+
+    /* ─── Sample output ─────────────────────────────────────────────── */
+    #demo { background: var(--surface-3); }
+
+    .terminal {
+      background: rgba(12, 11, 10, 0.9);
+      border: 1px solid var(--border-strong);
+      border-radius: var(--radius-lg);
+      overflow: hidden;
+      backdrop-filter: blur(12px);
+    }
+
+    .terminal-bar {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.85rem 1.25rem;
+      border-bottom: 1px solid var(--border);
+      background: var(--surface);
+    }
+
+    .dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+    }
+
+    .dot-r { background: #f87171; }
+    .dot-y { background: #fbbf24; }
+    .dot-g { background: #4ade80; }
+
+    .terminal-title {
+      font-family: var(--font-mono);
+      font-size: 0.7rem;
+      color: var(--text-3);
+      margin-left: auto;
+      letter-spacing: 0.08em;
+    }
+
+    .terminal-body {
+      padding: 1.75rem 2rem;
+      font-family: var(--font-mono);
+      font-size: 0.825rem;
+      line-height: 1.9;
+      overflow-x: auto;
+    }
+
+    .t-prompt  { color: var(--text-3); }
+    .t-input   { color: var(--text-1); }
+    .t-step    { color: var(--text-3); }
+    .t-agent   { color: var(--accent-bright); }
+    .t-teal    { color: var(--teal); }
+    .t-action  { color: var(--text-3); font-style: italic; }
+    .t-ok      { color: #4ade80; }
+    .t-head    { color: var(--text-2); }
+    .t-val     { color: var(--text-1); }
+    .t-pct     { color: var(--accent); }
+    .t-note    { color: var(--text-3); }
+    .t-dim     { color: var(--text-3); }
+
+    pre { white-space: pre; }
+
+    /* ─── Footer ────────────────────────────────────────────────────── */
+    footer {
+      padding: 3rem 0;
+      text-align: center;
+      border-top: 1px solid var(--border);
+    }
+
+    footer p {
+      font-family: var(--font-mono);
+      font-size: 0.72rem;
+      letter-spacing: 0.1em;
+      color: var(--text-3);
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ── Nav ─────────────────────────────────────────────────────────── -->
+  <nav>
+    <div class="nav-inner">
+      <a class="nav-brand" href="#overview">Insight Engine</a>
+      <ul class="nav-links">
+        <li><a href="#overview">Overview</a></li>
+        <li><a href="#architecture">Architecture</a></li>
+        <li><a href="#stack">Stack</a></li>
+        <li><a href="#demo">Demo</a></li>
+      </ul>
+    </div>
+  </nav>
+
+  <!-- ── Hero ─────────────────────────────────────────────────────────── -->
+  <section id="overview">
+    <div class="container">
+      <p class="hero-kicker">Social Analytics Dashboard</p>
+      <h1 class="hero-title">Insight<br /><em>Engine</em></h1>
+      <p class="hero-tagline">
+        Multi-agent social analytics — query your Instagram &amp; Facebook data in plain English.
+      </p>
+      <div class="hero-ctas">
+        <a class="btn btn-primary" href="#" <!-- TODO: replace with real URL -->>Live Demo</a>
+        <a class="btn btn-ghost" href="#" <!-- TODO: replace with real URL -->>View Source</a>
+      </div>
+      <hr class="hero-rule" />
+    </div>
+  </section>
+
+  <!-- ── What It Does ──────────────────────────────────────────────────── -->
+  <section id="features">
+    <div class="container">
+      <p class="section-label">What It Does</p>
+      <h2 class="section-title">Analytics that understands you</h2>
+      <div class="cards-grid">
+        <div class="card">
+          <p class="card-num">01</p>
+          <h3 class="card-title">Dual-Platform Analytics</h3>
+          <p>Aggregates Instagram reach and Facebook impressions into a single unified view. Break down performance by genre, emotion, topic, and date — with a genre &times; emotion heatmap and Pareto 80/20 identification built in.</p>
+        </div>
+        <div class="card">
+          <p class="card-num">02</p>
+          <h3 class="card-title">Multi-Agent AI</h3>
+          <p>An Orchestrator classifies every query and dispatches three specialist sub-agents in parallel: Data Connoisseur for SQL queries, Dashboard Manager for filter control, and Report Master for snapshot generation.</p>
+        </div>
+        <div class="card">
+          <p class="card-num">03</p>
+          <h3 class="card-title">Natural Language Filtering</h3>
+          <p>Ask "Show me top genres for Instagram in April" and watch the charts update live. Sub-agent progress streams to the UI via Server-Sent Events, so you see each step as it happens.</p>
+        </div>
+        <div class="card">
+          <p class="card-num">04</p>
+          <h3 class="card-title">Instant HTML Reports</h3>
+          <p>One command generates a fully self-contained HTML snapshot: charts, tables, narrative summary, and Pareto analysis — ready to download and share without any external dependencies.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── Architecture ──────────────────────────────────────────────────── -->
+  <section id="architecture">
+    <div class="container">
+      <p class="section-label">How It Works</p>
+      <h2 class="section-title">Four-tier agent pipeline</h2>
+
+      <div class="arch-flow">
+
+        <!-- Tier 1: User query -->
+        <div class="arch-row center">
+          <div class="arch-node entry" style="max-width:340px; flex:none;">
+            <div class="arch-node-label">Input</div>
+            <div class="arch-node-name">User Query</div>
+            <div class="arch-node-note">Plain-English question or dashboard command, sent with current filter state as context.</div>
+          </div>
+        </div>
+
+        <div class="arch-row center">
+          <span class="arch-arrow">&#8595;</span>
+        </div>
+
+        <!-- Tier 2: Orchestrator -->
+        <div class="arch-row center">
+          <div class="arch-node" style="max-width:400px; flex:none;">
+            <div class="arch-node-label">Orchestrator</div>
+            <div class="arch-node-name">Intent Classifier &amp; Dispatcher</div>
+            <div class="arch-node-note">Groq llama-3.3-70b with function calling. Classifies intent (data_query, dashboard_change, report, conversation) and builds a parallel dispatch plan.</div>
+          </div>
+        </div>
+
+        <div class="arch-row center">
+          <span class="arch-arrow">&#8595;</span>
+        </div>
+
+        <!-- Tier 3: Sub-agents -->
+        <div class="arch-agents">
+          <div class="arch-node">
+            <div class="arch-node-label">Sub-agent A</div>
+            <div class="arch-node-name">Data Connoisseur</div>
+            <div class="arch-node-note">Runs 7 parallel MySQL queries (genre, emotion, trend, matrix, Pareto &times;2, summary). Returns structured data insights and percentage breakdowns.</div>
+          </div>
+          <div class="arch-node">
+            <div class="arch-node-label">Sub-agent B</div>
+            <div class="arch-node-name">Dashboard Manager</div>
+            <div class="arch-node-note">Resolves date ranges and emits DashboardAction[] — platform, date range, topN, search — applied to React state without a page reload.</div>
+          </div>
+          <div class="arch-node teal">
+            <div class="arch-node-label">Sub-agent C</div>
+            <div class="arch-node-name">Report Master</div>
+            <div class="arch-node-note">Calls Data Connoisseur internally, then renders a self-contained HTML report with inline CSS and downloadable via a blob URL.</div>
+          </div>
+        </div>
+
+        <!-- SSE label -->
+        <div class="arch-sse">
+          Results streamed to browser via <span>Server-Sent Events</span> — progress visible at each sub-agent step
+        </div>
+
+        <div class="arch-row center">
+          <span class="arch-arrow">&#8595;</span>
+        </div>
+
+        <!-- Tier 4: Dashboard -->
+        <div class="arch-row center">
+          <div class="arch-node teal" style="max-width:400px; flex:none;">
+            <div class="arch-node-label">Frontend</div>
+            <div class="arch-node-name">React Dashboard</div>
+            <div class="arch-node-note">Recharts visualisations (bar, area, composed, heatmap) update reactively. Theme-aware dark/light toggle persisted in localStorage. Three.js particle background responds to mouse.</div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- ── Tech Stack ─────────────────────────────────────────────────────── -->
+  <section id="stack">
+    <div class="container">
+      <p class="section-label">Tech Stack</p>
+      <h2 class="section-title">Built on modern primitives</h2>
+
+      <div class="stack-groups">
+        <div>
+          <p class="stack-group-label">Frontend</p>
+          <div class="stack-pills">
+            <span class="pill">Next.js 16</span>
+            <span class="pill">React 19</span>
+            <span class="pill">TypeScript</span>
+            <span class="pill">Recharts</span>
+            <span class="pill">Three.js</span>
+            <span class="pill">CSS Modules</span>
+            <span class="pill">SWR</span>
+          </div>
+        </div>
+        <div>
+          <p class="stack-group-label">Backend &amp; Data</p>
+          <div class="stack-pills">
+            <span class="pill">MySQL</span>
+            <span class="pill">Next.js API Routes</span>
+            <span class="pill">SSE Streaming</span>
+            <span class="pill">7-parallel queries</span>
+          </div>
+        </div>
+        <div>
+          <p class="stack-group-label">AI &amp; Inference</p>
+          <div class="stack-pills">
+            <span class="pill accent">Groq API</span>
+            <span class="pill accent">llama-3.3-70b</span>
+            <span class="pill">Function Calling</span>
+            <span class="pill">4-tier agent system</span>
+          </div>
+        </div>
+        <div>
+          <p class="stack-group-label">Infrastructure</p>
+          <div class="stack-pills">
+            <span class="pill teal">Vercel</span>
+            <span class="pill">Docker (local DB)</span>
+            <span class="pill">Google Fonts CDN</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── Sample Output ──────────────────────────────────────────────────── -->
+  <section id="demo">
+    <div class="container">
+      <p class="section-label">Sample Output</p>
+      <h2 class="section-title">Agent in action</h2>
+
+      <div class="terminal">
+        <div class="terminal-bar">
+          <span class="dot dot-r"></span>
+          <span class="dot dot-y"></span>
+          <span class="dot dot-g"></span>
+          <span class="terminal-title">insight-engine · agent panel</span>
+        </div>
+        <div class="terminal-body">
+<pre><span class="t-prompt">You ›</span>  <span class="t-input">"Show me top genres for Instagram in April 2025"</span>
+
+<span class="t-dim">────────────────────────────────────────────────────────</span>
+
+<span class="t-step">●</span>  <span class="t-agent">Orchestrator</span>      <span class="t-action">classifying intent…</span>
+     <span class="t-dim">→ data_query + dashboard_change detected</span>
+     <span class="t-dim">→ dispatching 2 sub-agents in parallel</span>
+
+<span class="t-step">●</span>  <span class="t-agent">Data Connoisseur</span>  <span class="t-action">running SQL queries against ig_data…</span>
+     <span class="t-dim">→ resolving "April 2025" → 2025-04-01 … 2025-04-30</span>
+     <span class="t-dim">→ 7 parallel queries (genre, emotion, trend, matrix, pareto…)</span>
+
+<span class="t-step">●</span>  <span class="t-teal">Dashboard Manager</span> <span class="t-action">applying filters…</span>
+     <span class="t-dim">→ platform: instagram · dateRange: Apr 2025 · topN: 10</span>
+
+<span class="t-dim">────────────────────────────────────────────────────────</span>
+
+<span class="t-ok">✓</span>  <span class="t-head">Top genres by reach</span>  <span class="t-dim">(Apr 2025 · Instagram)</span>
+
+     <span class="t-dim">1.</span>  <span class="t-val">Education      </span>  <span class="t-dim">— </span><span class="t-val"> 142,380 reach</span>  <span class="t-pct">(28%)</span>
+     <span class="t-dim">2.</span>  <span class="t-val">News           </span>  <span class="t-dim">— </span><span class="t-val">  98,210 reach</span>  <span class="t-pct">(19%)</span>
+     <span class="t-dim">3.</span>  <span class="t-val">Entertainment  </span>  <span class="t-dim">— </span><span class="t-val">  87,450 reach</span>  <span class="t-pct">(17%)</span>
+     <span class="t-dim">4.</span>  <span class="t-val">Product        </span>  <span class="t-dim">— </span><span class="t-val">  64,120 reach</span>  <span class="t-pct">(13%)</span>
+     <span class="t-dim">5.</span>  <span class="t-val">Lifestyle      </span>  <span class="t-dim">— </span><span class="t-val">  41,800 reach</span>  <span class="t-pct">(8%)</span>
+
+<span class="t-dim">────────────────────────────────────────────────────────</span>
+
+<span class="t-note">Pareto: 80% of reach driven by 4 genres</span>  <span class="t-dim">(threshold at 80th pct)</span>
+<span class="t-note">Dominant emotion in Education: Informative (62%)</span>
+<span class="t-note">Dashboard updated · charts reflect Instagram · Apr 2025</span></pre>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── Footer ────────────────────────────────────────────────────────── -->
+  <footer>
+    <div class="container">
+      <p>Built by Lalit &middot; 2025</p>
+    </div>
+  </footer>
+
+</body>
+</html>
