@@ -420,8 +420,15 @@ for i in range(num_clusters):
             el.style.display = 'none'; el.classList.remove('active');
         });
         document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
-        document.getElementById(tabName).style.display = 'block';
-        setTimeout(() => { document.getElementById(tabName).classList.add('active'); window.dispatchEvent(new Event('resize')); }, 10);
+        const tab = document.getElementById(tabName);
+        tab.style.display = 'block';
+        setTimeout(() => {
+            tab.classList.add('active');
+            tab.querySelectorAll('[id]').forEach(el => {
+                if (window.Plotly && el.querySelector('.plotly')) Plotly.Plots.resize(el);
+            });
+            window.dispatchEvent(new Event('resize'));
+        }, 10);
         evt.currentTarget.classList.add('active');
     }
 </script>
@@ -539,8 +546,6 @@ for i in range(num_clusters):
             };
             Plotly.newPlot('netflix-cluster-chart', clusterData, clusterLayout, {responsive: true});
         });
-
-    });
 </script>
 </body>
 </html>
